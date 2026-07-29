@@ -1,0 +1,10 @@
+modbus:
+  - name: auriga                        # Name of this hub
+    type: tcp                           # Type of modbus
+    host: 192.168.1.50                  # IP address or name of modbus device
+    port: 502                           # Network port for the communication
+    delay: 5                            # Time to delay sending messages in seconds after connecting
+    timeout: 5                          # Timeout while waiting for a response in seconds
+    message_wait_milliseconds: 100      # Time to wait in milliseconds between requests
+
+    sensors: !include auriga_sensors.yaml
