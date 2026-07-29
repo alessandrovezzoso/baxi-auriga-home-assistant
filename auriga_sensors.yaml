@@ -1,3 +1,29 @@
+# Power on/off
+# BIT0: floor heating             0 power off; 1 power on
+# BIT1: air conditioner (zone 1)  0 power off; 1 power on
+# BIT2: domestic hot water        0 power off; 1 power on
+# BIT3: air conditioner (zone 2)  0 power off; 1 power on
+# BIT4 - BIT15: Reserved
+- name: "System power state"
+  address: 0
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_system_power_state
+  data_type: uint16
+  input_type: holding
+
+# Setting mode
+# 1: Auto
+# 2: Cool
+# 3: Heat
+- name: "Setting mode"
+  address: 1
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_setting_mode
+  data_type: uint16
+  input_type: holding
+
 # Frequenza operativa del compressore
 - name: "Compressor operating frequency"
   address: 100
