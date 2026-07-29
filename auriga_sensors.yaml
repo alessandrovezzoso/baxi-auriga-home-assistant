@@ -1,0 +1,254 @@
+# Frequenza operativa del compressore
+- name: "Compressor operating frequency"
+  address: 100
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_operating_frequency
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "Hz"
+  device_class: frequency
+  state_class: measurement
+
+# Modalita operativa attuale dell'unita (0: off, 2: cooling, 3: heating)
+- name: "Operating mode"
+  address: 101
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_operating_mode
+  data_type: int16
+  input_type: holding
+
+# Velocità della ventola
+- name: "Fan speed"
+  address: 102
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_fan_speed
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "rpm"
+  state_class: measurement
+
+# Apertura della valvola di espansione elettronica (multipli di 8)
+- name: "Electronic expansion valve openness"
+  address: 103
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_pmv_openness
+  data_type: int16
+  input_type: holding
+  state_class: measurement
+
+# 
+- name: "Water inlet temperature"               # TW_in
+  address: 104
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_water_inlet_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+#
+- name: "Water outlet temperature"              # TW_out
+  address: 105
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_water_outlet_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura del condensatore
+- name: "Condenser temperature"
+  address: 106
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_t3_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura ambiente esterna
+- name: "Outdoor ambient temperature"
+  address: 107
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_t4_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura di scarico del compressore
+- name: "Discharge temperature"                 # Tp
+  address: 108
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_discharge_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura di ritorno aria del compressore
+- name: "Return air temperature"                # Th
+  address: 109
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_return_air_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura totale uscita acqua
+- name: "Total water outlet temperature"        # T1
+  address: 110
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_t1_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura totale uscita acqua impianti (dopo il riscaldatore ausiliario)
+- name: "Total water outlet temperature (behind the auxiliary heater)"        # T1B
+  address: 111
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_t1b_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura refrigerante lato liquido
+- name: "Refrigerant liquid side temperature"   # T2
+  address: 112
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_t2_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura refrigerante lato gas
+- name: "Refrigerant gas side temperature"      # T2B
+  address: 113
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_t2b_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura ambiente interna
+- name: "Room temperature"                      # Ta
+  address: 114
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_ta_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Temperatura serbatoio acqua
+- name: "Water tank temperature"                # T5
+  address: 115
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_t5_temperature
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Valore alta pressione unita esterna
+- name: "Outdoor unit high pressure"
+  address: 116
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_pressure1
+  input_type: holding
+  unit_of_measurement: "kPa"
+  device_class: pressure
+  state_class: measurement
+
+# Valore bassa pressione unita esterna
+- name: "Outdoor unit low pressure"
+  address: 117
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_pressure2
+  input_type: holding
+  unit_of_measurement: "kPa"
+  device_class: pressure
+  state_class: measurement
+
+# Corrente operativa unita esterna
+- name: "Outdoor unit operating current"
+  address: 118
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_operating_current
+  input_type: holding
+  unit_of_measurement: "A"
+  device_class: current
+  state_class: measurement
+
+# Tensione unita esterna
+- name: "Outdoor unit voltage"
+  address: 119
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_voltage
+  input_type: holding
+  unit_of_measurement: "V"
+  device_class: voltage
+  state_class: measurement
+
+# Tempo di funzionamento del compressore
+- name: "Compressor operating time"
+  address: 122
+  scan_interval: 300
+  slave: 1
+  unique_id: auriga_compressor_operating_time
+  input_type: holding
+  unit_of_measurement: "h"
+  device_class: duration
+  state_class: total_increasing
+
+#
+- name: "Current fault"
+  address: 124
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_current_fault
+  input_type: holding
+
+# Bit di stato 1
+# BIT1: Sbrinamento, 
+# BIT2: Antigelo, 
+# BIT3: Ritorno olio, 
+# BIT4: Remote On/Off, 
+# BIT5: Segnale test unità esterna, 
+# BIT6: Termostato (riscaldamento), 
+# BIT7: Termostato (raffreddamento), 
+# BIT8: Input solare, 
+# BIT10: SG 1=normale, 0=prezzo alto, 
+# BIT11: EUV 1=elettricità gratis, 0=valuta segnale SG
+- name: "Status bit 1"
+  address: 128
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_status_bit1
+  input_type: holding
