@@ -24,6 +24,18 @@
   data_type: uint16
   input_type: holding
 
+# Setting water temperature T1s
+- name: "Setting water temperature"
+  address: 2
+  scan_interval: 60
+  slave: 1
+  unique_id: auriga_setting_water_temperature_t1s
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
 # Frequenza operativa del compressore
 - name: "Compressor operating frequency"
   address: 100
