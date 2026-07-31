@@ -16,9 +16,7 @@
   input_type: holding
 
 # Setting mode
-# 1: Auto
-# 2: Cool
-# 3: Heat
+# (1: auto, 2: cool, 3: heat)
 - name: "Setting mode"
   address: 1
   scan_interval: 30
@@ -91,9 +89,7 @@
   input_type: holding
 
 # Forced water heating
-# 0: Invalid
-# 1: Forced on
-# 2: Forced off
+# (0: invalid, 2: forced on, 3: forced off)
 - name: "Forced water heating"
   address: 7
   scan_interval: 60
@@ -103,9 +99,7 @@
   input_type: holding
 
 # Forced electric water tank heater
-# 0: Invalid
-# 1: Forced on
-# 2: Forced off
+# (0: invalid, 2: forced on, 3: forced off)
 - name: "Forced electric water tank heater"
   address: 8
   scan_interval: 60
@@ -115,9 +109,7 @@
   input_type: holding
 
 # Forced water heating
-# 0: Invalid
-# 1: Forced on
-# 2: Forced off
+# (0: invalid, 2: forced on, 3: forced off)
 - name: "Forced electric heater"
   address: 9
   scan_interval: 60
@@ -136,7 +128,7 @@
   scan_interval: 15
   slave: 1
   unique_id: auriga_operating_frequency
-  data_type: int16
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "Hz"
   device_class: frequency
@@ -149,7 +141,7 @@
   scan_interval: 30
   slave: 1
   unique_id: auriga_operating_mode
-  data_type: int16
+  data_type: uint16
   input_type: holding
 
 # Fans speed
@@ -158,148 +150,160 @@
   scan_interval: 30
   slave: 1
   unique_id: auriga_fan_speed
-  data_type: int16
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "rpm"
   state_class: measurement
 
-# Apertura della valvola di espansione elettronica (multipli di 8)
+# Electronic expansion valve openness (multiples di 8)
 - name: "Electronic expansion valve openness"
   address: 103
   scan_interval: 30
   slave: 1
   unique_id: auriga_pmv_openness
-  data_type: int16
+  data_type: uint16
   input_type: holding
   state_class: measurement
 
-# 
+# Water inlet temperature
 - name: "Water inlet temperature"               # TW_in
   address: 104
   scan_interval: 15
   slave: 1
-  unique_id: auriga_water_inlet_temperature
+  unique_id: auriga_twin_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-#
+# Water outlet temperature
 - name: "Water outlet temperature"              # TW_out
   address: 105
   scan_interval: 15
   slave: 1
-  unique_id: auriga_water_outlet_temperature
+  unique_id: auriga_twout_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura del condensatore
+# Condenser temperature
 - name: "Condenser temperature"
   address: 106
   scan_interval: 30
   slave: 1
   unique_id: auriga_t3_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura ambiente esterna
+# Outdoor ambient temperature
 - name: "Outdoor ambient temperature"
   address: 107
   scan_interval: 30
   slave: 1
   unique_id: auriga_t4_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura di scarico del compressore
+# Compressor discharge temperature
 - name: "Discharge temperature"                 # Tp
   address: 108
   scan_interval: 30
   slave: 1
-  unique_id: auriga_discharge_temperature
+  unique_id: auriga_tp_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura di ritorno aria del compressore
+# Compressor return air temperature
 - name: "Return air temperature"                # Th
   address: 109
   scan_interval: 30
   slave: 1
-  unique_id: auriga_return_air_temperature
+  unique_id: auriga_th_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura totale uscita acqua
+# Total water outlet temperature
 - name: "Total water outlet temperature"        # T1
   address: 110
   scan_interval: 15
   slave: 1
   unique_id: auriga_t1_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura totale uscita acqua impianti (dopo il riscaldatore ausiliario)
+# Total water outlet temperature (behind the auxiliary heater)
 - name: "Total water outlet temperature (behind the auxiliary heater)"        # T1B
   address: 111
   scan_interval: 15
   slave: 1
   unique_id: auriga_t1b_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura refrigerante lato liquido
+# Refrigerant liquid side temperature
 - name: "Refrigerant liquid side temperature"   # T2
   address: 112
   scan_interval: 15
   slave: 1
   unique_id: auriga_t2_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura refrigerante lato gas
+# Refrigerant gas side temperature
 - name: "Refrigerant gas side temperature"      # T2B
   address: 113
   scan_interval: 15
   slave: 1
   unique_id: auriga_t2b_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura ambiente interna
+# Room temperature
 - name: "Room temperature"                      # Ta
   address: 114
   scan_interval: 30
   slave: 1
   unique_id: auriga_ta_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
   state_class: measurement
 
-# Temperatura serbatoio acqua
-- name: "Water tank temperature"                # T5
+# Domestic hot water temperature
+- name: "Domestic hot water tank temperature"   # T5
   address: 115
   scan_interval: 30
   slave: 1
   unique_id: auriga_t5_temperature
+  data_type: int16
   input_type: holding
   unit_of_measurement: "°C"
   device_class: temperature
@@ -311,6 +315,7 @@
   scan_interval: 15
   slave: 1
   unique_id: auriga_pressure1
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "kPa"
   device_class: pressure
@@ -322,53 +327,58 @@
   scan_interval: 15
   slave: 1
   unique_id: auriga_pressure2
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "kPa"
   device_class: pressure
   state_class: measurement
 
-# Corrente operativa unita esterna
+# Outdoor unit operating current
 - name: "Outdoor unit operating current"
   address: 118
   scan_interval: 15
   slave: 1
   unique_id: auriga_operating_current
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "A"
   device_class: current
   state_class: measurement
 
-# Tensione unita esterna
+# Outdoor unit voltage
 - name: "Outdoor unit voltage"
   address: 119
   scan_interval: 15
   slave: 1
   unique_id: auriga_voltage
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "V"
   device_class: voltage
   state_class: measurement
 
-# Tempo di funzionamento del compressore
+# Compressor operating time
 - name: "Compressor operating time"
   address: 122
   scan_interval: 300
   slave: 1
   unique_id: auriga_compressor_operating_time
+  data_type: uint16
   input_type: holding
   unit_of_measurement: "h"
   device_class: duration
   state_class: total_increasing
 
-#
+# Current fault
 - name: "Current fault"
   address: 124
   scan_interval: 30
   slave: 1
   unique_id: auriga_current_fault
+  data_type: uint16
   input_type: holding
 
-# Bit di stato 1
+# Status bit 1
 # BIT1: Sbrinamento, 
 # BIT2: Antigelo, 
 # BIT3: Ritorno olio, 
@@ -384,4 +394,163 @@
   scan_interval: 15
   slave: 1
   unique_id: auriga_status_bit1
+  data_type: uint16
   input_type: holding
+
+# Load output
+# BIT0: Electric heater IBH1
+# BIT2: Electric heater TBH
+# BIT3: Water pump PUMPI
+# BIT4: SV1
+# BIT6: External water pump P_o
+# BIT7: Water return water P_d
+# BIT8: Mixed water pump P_c
+# BIT9: SV2
+# BIT10: HEAT4
+# BIT11: Solar water pump
+# BIT12: ALARM
+# BIT13: RUN
+# BIT14: External heater
+# BIT15: DEFROST
+- name: "Load output"
+  address: 129
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_load_output
+  data_type: uint16
+  input_type: holding
+
+# Hydraulic module's version number
+- name: "Hydraulic module version number"
+  address: 130
+  scan_interval: 3600
+  slave: 1
+  unique_id: auriga_hydraulic_module_version_number
+  data_type: uint16
+  input_type: holding
+
+# Wired controller version number
+- name: "Wired controller version number"
+  address: 131
+  scan_interval: 3600
+  slave: 1
+  unique_id: auriga_wired_controller_version_number
+  data_type: uint16
+  input_type: holding
+
+# Unit target frequency
+- name: "Unit target frequency"
+  address: 132
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_unit_target_frequency
+  data_type: uint16
+  input_type: holding
+  unit_of_measurement: "Hz"
+  device_class: frequency
+  state_class: measurement
+
+# DC bus current
+- name: "DC bus current"
+  address: 133
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_dc_bus_current
+  data_type: uint16
+  input_type: holding
+  unit_of_measurement: "A"
+  device_class: current
+  state_class: measurement
+
+# DC bus voltage
+- name: "DC bus voltage"
+  address: 134
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_dc_bus_voltage
+  data_type: uint16
+  scale: 0.1
+  input_type: holding
+  unit_of_measurement: "V"
+  device_class: voltage
+  state_class: measurement
+
+# Inverter module temperature
+- name: "Inverter module temperature"      # TF
+  address: 135
+  scan_interval: 15
+  slave: 1
+  unique_id: auriga_tf_temperature
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Hydraulic module curve T1S calculated value 1
+- name: "Hydraulic module curve T1S calculated value 1"   # 
+  address: 136
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_t1s_calculated_temperature_calc1
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Hydraulic module curve T1S calculated value 2
+- name: "Hydraulic module curve T1S calculated value 2"   # 
+  address: 137
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_t1s_calculated_temperature_calc2
+  data_type: int16
+  input_type: holding
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+
+# Water flow
+- name: "Water flow"
+  address: 138
+  scan_interval: 30
+  slave: 1
+  unique_id: auriga_water_flow
+  data_type: uint16
+  input_type: holding
+  unit_of_measurement: "m³/h"
+  device_class: volume_flow_rate
+  state_class: measurement
+
+# Limit outdoor unit current
+- name: "Limit outdoor unit current"
+  address: 139
+  scan_interval: 300
+  slave: 1
+  unique_id: auriga_limit_outdoor_unit_current
+  data_type: uint16
+  input_type: holding
+  unit_of_measurement: "A"
+  device_class: current
+  state_class: measurement
+
+# Ability of hydraulic module
+- name: "Ability of hydraulic module"
+  address: 140
+  scan_interval: 60
+  slave: 1
+  unique_id: auriga_ability_hydraulic_mode
+  data_type: uint16
+  scale: 0.01
+  precision: 2
+  input_type: holding
+  unit_of_measurement: "kW"
+  device_class: power
+  state_class: measurement
+
+
+# SETTING PARAMETERS ################################################################
+
+
+-
