@@ -65,7 +65,7 @@ Sul web la variante non è quasi mai specificata, e la variante fisica non è se
 La corrispondenza è inequivocabile:
 ![Variante gateway](images/01-usr-version-type.png)
  
-Consiglio di acquistare da un venditore con reso facile e specificare per iscritto nell'ordine che si vuole la versione H7. Alla consegna, verificare il tipo di installarlo.
+Consiglio di acquistare da un venditore con reso facile e specificare per iscritto nell'ordine che si vuole la versione H7. Alla consegna, verificare il tipo prima di installarlo.
 
 ## Collegamento fisico
 - **Alimentazione**: 5–36 V DC (alimentatore in dotazione). Il modulo non è PoE.
