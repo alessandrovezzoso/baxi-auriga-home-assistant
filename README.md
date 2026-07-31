@@ -3,7 +3,6 @@
   - [Baxi Auriga heat pump](#baxi-auriga-heat-pump)
     - [Descrizione dei termini](#descrizione-dei-termini)
 - [Configurazione gateway USR-TCP232-410S-H7](#configurazione-gateway-usr-tcp232-410s-h7)
-  - [Perché ho scelto la versione H7](#perché-ho-scelto-la-versione-h7)
   - [Come capire se il modulo è davvero una H7](#come-capire-se-il-modulo-è-davvero-una-h7)
     - [Filtro rapido dalle specifiche di vendita](#filtro-rapido-dalle-specifiche-di-vendita)
     - [Verifica definitiva (l'unica affidabile)](#verifica-definitiva-lunica-affidabile)
@@ -22,7 +21,7 @@
   - [6. Configurazione lato Home Assistant](#6-configurazione-lato-home-assistant)
   - [Note sul bus condiviso e più dispositivi](#note-sul-bus-condiviso-e-più-dispositivi)
 ---
- 
+
 ## Baxi Auriga heat pump 
 
 ### Descrizione dei termini
@@ -42,31 +41,26 @@
 | **Th / Tp**         | Sensori del Compressore          | *(Dato tecnico)*: Indicano le temperature del motore                                                                                                             |
 | **Pe**              | Pressione Gas                    | *(Dato tecnico)*: Indica a che pressione sta lavorando l'impianto. Utile per capire se c'è una perdita di gas                                                    |
 
-# Configurazione gateway USR-TCP232-410S-H7
- 
-## Perché ho scelto la versione H7
- 
+# Configurazione gateway USR-TCP232-410S-H7 
 La serie USR-TCP232-410s esiste in **quattro varianti hardware**, rilasciate in sequenza: **M4**, **HB**, **RT** e **H7**. Sono esteticamente identiche e i rivenditori le vendono quasi sempre come "410s" generico, senza specificare il suffisso. Le differenze però sono sostanziali.
  
-| Caratteristica | M4 | HB | RT | **H7** |
-|---|:---:|:---:|:---:|:---:|
-| Processore | Cortex-M4 | Cortex-M7 | Cortex-M7 | **Cortex-M7** |
-| Frequenza | 120 MHz | 400 MHz | 400 MHz | **400 MHz** |
-| Conversione Modbus TCP/RTU | ✅ | ✅ | ✅ | ✅ |
-| Edge Computing | ❌ | ❌ | ❌ | ✅ |
-| MQTT | ❌ | ❌ | ❌ | ✅ |
-| JSON | ❌ | ❌ | ❌ | ✅ |
-| SSL/TLS | ❌ | ❌ | ❌ | ✅ |
-| **485 Anti-Collision** | ❌ | ❌ | ❌ | ✅ |
-| NTP | ❌ | ❌ | ❌ | ✅ |
-| Firmware | 30xx | 71xx | 80xx | **72xx** |
+| Caratteristica             | M4        | HB        | RT        | H7        |
+|---                         |:---:      |:---:      |:---:      |:---:      |
+| Processore                 | Cortex-M4 | Cortex-M7 | Cortex-M7 | Cortex-M7 |
+| Frequenza                  | 120 MHz   | 400 MHz   | 400 MHz   | 400 MHz   |
+| Conversione Modbus TCP/RTU | SI        | SI        | SI        | SI        |
+| Edge Computing             | NO        | NO        | NO        | SI        |
+| MQTT                       | NO        | NO        | NO        | SI        |
+| JSON                       | NO        | NO        | NO        | SI        |
+| SSL/TLS                    | NO        | NO        | NO        | SI        |
+| 485 Anti-Collision         | NO        | NO        | NO        | SI        |
+| NTP                        | NO        | NO        | NO        | SI        |
+| Firmware                   | 30xx      | 71xx      | 80xx      | 72xx      |
  
-Ho scelto la **H7** per tre motivi concreti legati al mio impianto — **non** per il generico "ha più funzioni":
- 
+Ho scelto la variante **H7** per tre motivi concreti legati al mio impianto — non per il generico "ha più funzioni":
 1. **485 Anti-Collision** — è la funzione decisiva. Il bus RS485 della pompa di calore è **condiviso con il comando cablato** della macchina. Questa funzione impedisce al gateway di trasmettere mentre il bus è occupato dal comando cablato, prevenendo le collisioni che causano errori di comunicazione intermittenti. È l'unica variante che ce l'ha, ed è mirata esattamente a questo scenario.
-2. **MQTT con scrittura registri** — se in futuro vorrò disaccoppiare il polling da Home Assistant, la H7 può fare da gateway MQTT completo (legge i registri, pubblica in JSON, riceve comandi di scrittura). Una porta aperta sul futuro.
+2. **MQTT con scrittura registri** — se in futuro vorrò disaccoppiare il polling da Home Assistant, la H7 può fare da gateway MQTT completo (legge i registri, pubblica in JSON, riceve comandi di scrittura).
 3. **Edge computing** — permette al gateway di interrogare autonomamente la pompa e restituire i dati già impacchettati, alleggerendo Home Assistant.
-> **Nota**: per il solo Modbus TCP diretto verso Home Assistant, anche la **RT** sarebbe sufficiente (la conversione Modbus TCP/RTU è presente su tutte le varianti). Se il bus **non** fosse condiviso e non interessassero MQTT/edge, la RT sarebbe una scelta valida e più economica. Nel mio caso il valore della 485 Anti-Collision giustifica la H7.
  
 ---
  
