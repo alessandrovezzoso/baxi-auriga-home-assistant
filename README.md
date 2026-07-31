@@ -126,11 +126,8 @@ Impostare i parametri seriali identici a quelli del dispositivo Modbus (per la B
 Cliccare **Save&Apply**.
 
 
-## 3. Modalità Modbus TCP (Port → RS485 → Socket)
- 
-**➡️ [SCREENSHOT QUI: pagina Port → RS485 → tab "Socket"]**
- 
-Questa è la parte **più importante**: attiva la conversione da Modbus TCP (lato rete) a Modbus RTU (lato seriale), che permette di usare `type: tcp` pulito in Home Assistant.
+## 3. Modalità Modbus TCP (Port → RS485 → Socket) 
+Questa è la parte più importante: attiva la conversione da Modbus TCP (lato rete) a Modbus RTU (lato seriale), che permette di usare `type: tcp` pulito in Home Assistant.
  
 | Campo | Valore | Note |
 |---|---|---|
@@ -147,16 +144,17 @@ Questa è la parte **più importante**: attiva la conversione da Modbus TCP (lat
 | Modbus TCP Exception | ❌ deselezionato | Vedi nota sotto |
 | Net Heartbeat Type | NONE | |
 | SOCKET B → Operating Mode | None | non serve |
+
+![Configurazione IP](images/04-usr-rs485-socket-config.png)
  
-> **Modbus TCP Exception** — in fase di **debug iniziale** può essere utile attivarlo temporaneamente: fa sì che Home Assistant riceva i codici di errore Modbus (es. "illegal address") invece di un timeout generico, aiutando a capire perché un registro non risponde. A regime si può lasciare OFF.
+**Modbus TCP Exception**: in fase di **debug iniziale** può essere utile attivarlo temporaneamente: fa sì che Home Assistant riceva i codici di errore Modbus (es. "illegal address") invece di un timeout generico, aiutando a capire perché un registro non risponde. A regime si può lasciare OFF.
  
 Cliccare **Save&Apply**.
- 
----
+
  
 ## 4. Impostazioni di sistema (System → System Setting)
  
-**➡️ [SCREENSHOT QUI: pagina System → System Setting]**
+![Configurazione IP](images/05-usr-system-config.png)
  
 | Campo | Valore | Note |
 |---|---|---|
