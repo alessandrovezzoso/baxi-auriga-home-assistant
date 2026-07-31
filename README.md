@@ -61,7 +61,7 @@ Ho scelto la variante **H7** per tre motivi concreti legati al mio impianto — 
  
 Sul web la variante non è quasi mai specificata, e la variante fisica non è sempre stampata in modo leggibile sul dispositivo. Il metodo sicuro è leggere la versione firmware dalla web UI seguendo il percorso **Status → Overview → Type**.
 La corrispondenza è inequivocabile:
-![Variante gateway](images/02-network-ipconfig.png)
+![Variante gateway](images/01-usr-version-type.png)
 
  
 ### Consiglio d'acquisto
