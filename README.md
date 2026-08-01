@@ -14,7 +14,7 @@
     - [Livello 1 — Disattivare le funzioni cloud nella web UI](#livello-1--disattivare-le-funzioni-cloud-nella-web-ui)
     - [Livello 2 — Regola sul router (blocco WAN)](#livello-2--regola-sul-router-blocco-wan)
     - [Test di verifica](#test-di-verifica)
-  - [6. Configurazione lato Home Assistant](#6-configurazione-lato-home-assistant)
+  - [Configurazione lato Home Assistant](#configurazione-lato-home-assistant)
   - [Note sul bus condiviso e più dispositivi](#note-sul-bus-condiviso-e-più-dispositivi)
 ---
 
@@ -129,21 +129,21 @@ Cliccare **Save&Apply**.
 ## 3. Modalità Modbus TCP (Port → RS485 → Socket) 
 Questa è la parte più importante: attiva la conversione da Modbus TCP (lato rete) a Modbus RTU (lato seriale), che permette di usare `type: tcp` pulito in Home Assistant.
  
-| Campo | Valore | Note |
-|---|---|---|
-| Working Mode (1° menu) | **TCP Server** | |
-| Working Mode (2° menu) | **Modbus TCP** | Il default è "None" → **selezionare Modbus TCP**. *È la conversione cruciale* |
-| Local Port Number | **502** | Il default è 26 → cambiare in 502 (porta standard Modbus TCP) |
-| Maximum Sockets supported | 8 | default |
-| Exceeding Maximum | KICK | default |
-| PRINT | OFF | |
-| **Modbus Poll** | **✅ spuntato** | Attiva il polling Modbus |
-| → Response Timeout | 200 ms | ok |
-| → Interval | **50–100 ms** | consigliato, per dare respiro al bus condiviso |
-| Modbus Cache | ❌ deselezionato | Non memorizzare valori: si vogliono letture fresche |
-| Modbus TCP Exception | ❌ deselezionato | Vedi nota sotto |
-| Net Heartbeat Type | NONE | |
-| SOCKET B → Operating Mode | None | non serve |
+| Campo                     | Valore     | Note                                           |
+|---                        |---         |---                                             |
+| Working Mode (1° menu)    | TCP Server |                                                |
+| Working Mode (2° menu)    | Modbus TCP | Il default è "None"                            |
+| Local Port Number         | 502        | Il default è 26                                |
+| Maximum Sockets supported | 8          | Default                                        |
+| Exceeding Maximum         | KICK       | Default                                        |
+| PRINT                     | OFF        |                                                |
+| Modbus Poll               | SI         | Attiva il polling Modbus                       |
+| → Response Timeout        | 200 ms     |                                                |
+| → Interval                | 50–100 ms  | Consigliato, per dare respiro al bus condiviso |
+| Modbus Cache              | NO         | Non memorizzare valori                         |
+| Modbus TCP Exception      | NO         | Vedi nota sotto                                |
+| Net Heartbeat Type        | NONE       |                                                |
+| SOCKET B → Operating Mode | None       | non serve                                      |
 
 ![Configurazione IP](images/04-usr-rs485-socket-config.png)
  
@@ -156,32 +156,27 @@ Cliccare **Save&Apply**.
  
 ![Configurazione IP](images/05-usr-system-config.png)
  
-| Campo | Valore | Note |
-|---|---|---|
-| **485 Anti-Collision** | **ON** | Il default è OFF → **attivare** (vedi sotto) |
-| → 485 Idle Time | 10 ms | valore di default, ok |
-| NTP | OFF | non serve per il Modbus TCP diretto |
-| Mask BCAST | OFF | |
-| Uart Cache | OFF | come Modbus Cache: no valori memorizzati |
-| Restarting Without Data | 0 | disattivato |
-| Web Switch | ON | lasciare ON per accedere alla web UI |
-| Webserver Port | 80 | |
-| Pass Word | *(consigliato cambiarla dal default `admin`)* | igiene di base |
+| Campo                   | Valore | Note                                     |
+|---                      |---     |---                                       |
+| 485 Anti-Collision      | ON     | il default è OFF                         |
+| → 485 Idle Time         | 10 ms  |                                          |
+| NTP                     | OFF    | non serve per il Modbus TCP diretto      |
+| Mask BCAST              | OFF    |                                          |
+| Uart Cache              | OFF    | come Modbus Cache: no valori memorizzati |
+| Restarting Without Data | 0      | disattivato                              |
+| Web Switch              | ON     | lasciare ON per accedere alla web UI     |
+| Webserver Port          | 80     |                                          |
+| Pass Word               | admin  | consigliato cambiarla                    |
  
 **Perché attivare 485 Anti-Collision**: è la funzione esclusiva della H7 e il motivo principale della scelta. Con il bus RS485 condiviso col comando cablato della pompa, controlla lo stato del bus e non manda il pin EN in trasmissione mentre il bus è in ricezione, prevenendo le collisioni che causano anomalie di comunicazione.
  
 Cliccare **Save&Apply**.
- 
----
+
  
 ## 5. Isolamento dal cloud (Cloud Service + regola router)
- 
-Per garantire che il modulo resti **completamente locale**, servono **due livelli** di protezione complementari.
+Per garantire che il modulo resti **completamente locale**, servono due livelli di protezione complementari.
  
 ### Livello 1 — Disattivare le funzioni cloud nella web UI
- 
-**➡️ [SCREENSHOT QUI: pagina Cloud Service]**
- 
 Nel menu **Cloud Service** (e nelle relative sottosezioni) disattivare:
 - **DM Cloud / PUSR Cloud** → OFF
 - **MQTT** (se non usato) → OFF
@@ -190,22 +185,19 @@ Nel menu **Cloud Service** (e nelle relative sottosezioni) disattivare:
 Questo dice al modulo di **non tentare** connessioni verso l'esterno.
  
 ### Livello 2 — Regola sul router (blocco WAN)
- 
 Sul router, creare una regola che **nega l'accesso a internet (WAN)** all'IP del modulo, lasciando intatta la comunicazione **LAN**. Consigliato agganciare la regola al **MAC address** del modulo (o prima fare una reservation DHCP e poi bloccare l'IP ormai stabile), così resta valida anche se l'IP cambiasse.
  
-Questo **impedisce fisicamente** al modulo di raggiungere internet, a prescindere dalle sue impostazioni interne.
+Questo impedisce fisicamente al modulo di raggiungere internet, a prescindere dalle sue impostazioni interne.
  
 ### Test di verifica
- 
-Dopo aver applicato entrambi i livelli, verificare che **tutto continui a funzionare con la WAN bloccata**:
-- la web UI del modulo resta raggiungibile in LAN ✅
-- Home Assistant continua a leggere i registri ✅
-Se entrambe funzionano a internet tagliato, è la **conferma pratica** che il modulo non ha alcuna dipendenza dal cloud.
- 
+Dopo aver applicato entrambi i livelli, verificare che tutto continui a funzionare con la WAN bloccata:
+- la web UI del modulo resta raggiungibile in LAN
+- Home Assistant continua a leggere i registri
+Se entrambe funzionano a internet tagliato, è la conferma pratica che il modulo non ha alcuna dipendenza dal cloud.
+
 ---
  
-## 6. Configurazione lato Home Assistant
- 
+## Configurazione lato Home Assistant
 Riepilogo dei parametri da usare nel file YAML (integrazione `modbus` nativa):
  
 ```yaml
