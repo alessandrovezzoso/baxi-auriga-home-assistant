@@ -76,7 +76,7 @@ Consiglio di acquistare da un venditore con reso facile e specificare per iscrit
   - **GND/E** → connessione earth (opzionale; con cavo schermato collegare la schermatura da un solo lato per evitare loop di massa)
 Il comando cablato deve restare collegato al modulo idraulico, altrimenti i registri non rispondono.
  
-**➡️ [SCREENSHOT QUI (opzionale): foto del cablaggio A+/B− ai morsetti H2/H1]**
+![Cablaggio HMI Baxi](images/01-baxi-hmi-wiring.png)
 
 
 
