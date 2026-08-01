@@ -182,7 +182,8 @@ Nel menu **Cloud Service** (e nelle relative sottosezioni) disattivare:
 - **MQTT** (se non usato) → OFF
 - **HTTPD Client** → OFF
 - ogni altra connessione a server remoti
-Questo dice al modulo di **non tentare** connessioni verso l'esterno.
+
+Questo dice al modulo di non tentare connessioni verso l'esterno.
  
 ### Livello 2 — Regola sul router (blocco WAN)
 Sul router, creare una regola che **nega l'accesso a internet (WAN)** all'IP del modulo, lasciando intatta la comunicazione **LAN**. Consigliato agganciare la regola al **MAC address** del modulo (o prima fare una reservation DHCP e poi bloccare l'IP ormai stabile), così resta valida anche se l'IP cambiasse.
@@ -202,18 +203,17 @@ Riepilogo dei parametri da usare nel file YAML (integrazione `modbus` nativa):
  
 ```yaml
 modbus:
-  - name: nome_dispositivo
+  - name: DEVICE_NAME
     type: tcp
-    host: 192.168.x.x        # IP del gateway USR
+    host: IP_ADDRESS
     port: 502
     delay: 5
-    message_wait_milliseconds: 100   # respiro sul bus condiviso
-    # ... sensori, con slave: N (Slave ID del dispositivo Modbus)
+    message_wait_milliseconds: 100
 ```
  
 > Con la conversione **Modbus TCP** attiva sul gateway (passo 3), si usa `type: tcp`. Se invece si usasse solo il *transparent transmission* (senza conversione), servirebbe `type: rtuovertcp`.
  
-**Primo test consigliato**: partire in **sola lettura**, verificare che un paio di sensori (es. temperatura esterna, temperatura acqua uscita) riportino valori coerenti col display della pompa. Se sì, la catena funziona end-to-end. Solo dopo abilitare le scritture.
+**Primo test consigliato**: partire in sola lettura, verificare che un paio di sensori (es. temperatura esterna, temperatura acqua uscita) riportino valori coerenti col display della pompa. Se sì, la catena funziona end-to-end. Solo dopo abilitare le scritture.
  
 > Se al primo tentativo si ottengono solo timeout con parametri seriali corretti, il primo sospettato è lo **Slave ID** (indirizzo Modbus del dispositivo, spesso impostato da un rotary switch sul PCB).
  
