@@ -178,9 +178,29 @@ Se entrambe funzionano a internet tagliato, è la conferma pratica che il modulo
 
 ---
  
-## Configurazione lato Home Assistant
-Riepilogo dei parametri da usare nel file YAML (integrazione `modbus` nativa):
- 
+# Configurazione lato Home Assistant
+L'integrazione è organizzata con il sistema dei `package` di Home Assistant, così tutto ciò che riguarda la pompa di calore Baxi resta raccolto in un unico punto, separato dal resto della configurazione.
+
+```
+/config/
+├── configuration.yaml           # attiva i package (vedi sotto)
+└── packages/
+    └── auriga_modbus.yaml       # tutta la configurazione Baxi
+```
+
+Perché Home Assistant carichi la cartella `packages/`, in `configuration.yaml` deve essere presente, dentro il blocco `homeassistant:`, la riga:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+Note importanti:
+- La chiave `homeassistant:` deve comparire **una sola volta** nel file. Se esiste già (di solito c'è di default), va aggiunta solo la riga `packages: ...` al suo interno con l'indentazione corretta (2 spazi), senza creare un secondo blocco `homeassistant:`.
+- La cartella deve chiamarsi **esattamente** `packages` e trovarsi in `/config/packages/`, perché `!include_dir_named packages` la cerca lì.
+
+Il file del package contiene l'hub Modbus con, al suo interno, l'intera lista dei sensori scritta direttamente (non più tramite `!include`):
+
 ```yaml
 modbus:
   - name: DEVICE_NAME
@@ -189,11 +209,18 @@ modbus:
     port: 502
     delay: 5
     message_wait_milliseconds: 100
+    sensors:
+      - name: ...
+        address: ...
+        ...
+      # ... tutti gli altri sensori ...
 ```
- 
 > Con la conversione **Modbus TCP** attiva sul gateway (passo 3), si usa `type: tcp`. Se invece si usasse solo il *transparent transmission* (senza conversione), servirebbe `type: rtuovertcp`.
- 
-**Primo test consigliato**: partire in sola lettura, verificare che un paio di sensori (es. temperatura esterna, temperatura acqua uscita) riportino valori coerenti col display della pompa. Se sì, la catena funziona end-to-end. Solo dopo abilitare le scritture.
+
+Verifica dopo le modifiche:
+1. **Strumenti per sviluppatori → Controlla configurazione**: deve restituire "Configurazione valida".
+2. **Riavviare** Home Assistant (le modifiche a `modbus:` richiedono un riavvio completo, non basta il semplice "ricarica").
+3. **Strumenti per sviluppatori → Stati**: cercare i sensori e verificare che riportino valori sensati. 
 
 Se dopo il riavvio di Home Assistant tutti i sensori Modbus restano su `unknown` o `unavailable`, significa che le richieste partono ma la pompa di calore non risponde. Nei log (Impostazioni → Sistema → Log, filtro `modbus`) si vede tipicamente:
 
@@ -203,7 +230,7 @@ No response received after 3 retries, continue with next request
 
 Questo indica che la comunicazione fisica arriva fino al gateway, ma lo slave interrogato non replica. La causa più frequente è un **indirizzo slave non corrispondente**.
 
-### Verifica dell'indirizzo sul modulo idraulico
+## Verifica dell'indirizzo sul modulo idraulico
 L'indirizzo Modbus della pompa si imposta sulla **scheda del modulo idraulico** (unità esterna), tramite un **selettore rotativo (rotary switch) da 0 a F** — oppure, su alcune versioni, un blocco di dip-switch. Il valore è in esadecimale: 0–9 = 0–9, A=10, B=11, C=12, D=13, E=14, F=15.
 
 **Di fabbrica il selettore è impostato su `0`.** Questo è un problema, perché in Modbus l'indirizzo `0` è riservato al broadcast: nessuno slave risponde a una richiesta indirizzata a 0. Con la rotella su `0` la pompa quindi non risponde, e tutti i sensori restano `unavailable`.
