@@ -53,11 +53,10 @@ Consiglio di acquistare da un venditore con reso facile e specificare per iscrit
 - **RS485 verso la pompa** (collegare dopo aver configurato il modulo):
   - **A +** → **H2** sul PCB del comando cablato
   - **B −** → **H1** sul PCB del comando cablato
-  - **GND/E** → connessione earth (opzionale; con cavo schermato collegare la schermatura da un solo lato per evitare loop di massa)
+  - **E** → connessione earth (opzionale, con cavo schermato collegare la schermatura da un solo lato per evitare loop di massa)
 Il comando cablato deve restare collegato al modulo idraulico, altrimenti i registri non rispondono.
  
 ![Cablaggio HMI Baxi](images/01-baxi-hmi-wiring.png)
-
 
 
 ## Accesso alla web UI
@@ -99,7 +98,7 @@ Impostare i parametri seriali identici a quelli del dispositivo Modbus (per la B
 | Sync Baudrate (RFC2217)     | OFF    | Il default è ON     |
 | Uart Heartbeat Type         | NONE   |                     |
 
-![Configurazione IP](images/03-usr-rs485-port-config.png)
+![Configurazione RS485 Port](images/03-usr-rs485-port-config.png)
 
 **Perché disattivare Sync Baudrate (RFC2217)?**: questa funzione permette a un software di rete di cambiare al volo i parametri seriali inviando un pacchetto speciale. Con Modbus non serve e potrebbe alterare il baud rate in modo indesiderato. Meglio bloccarlo su OFF così il baud rate resta fisso.
  
@@ -125,7 +124,7 @@ Questa è la parte più importante: attiva la conversione da Modbus TCP (lato re
 | Net Heartbeat Type        | NONE       |                                                |
 | SOCKET B → Operating Mode | None       | non serve                                      |
 
-![Configurazione IP](images/04-usr-rs485-socket-config.png)
+![Configurazione RS485 Socket](images/04-usr-rs485-socket-config.png)
  
 **Modbus TCP Exception**: in fase di **debug iniziale** può essere utile attivarlo temporaneamente: fa sì che Home Assistant riceva i codici di errore Modbus (es. "illegal address") invece di un timeout generico, aiutando a capire perché un registro non risponde. A regime si può lasciare OFF.
  
@@ -134,7 +133,7 @@ Cliccare **Save&Apply**.
  
 ## Impostazioni di sistema (System → System Setting)
  
-![Configurazione IP](images/05-usr-system-config.png)
+![Configurazione sistema](images/05-usr-system-config.png)
  
 | Campo                   | Valore | Note                                     |
 |---                      |---     |---                                       |
@@ -147,8 +146,6 @@ Cliccare **Save&Apply**.
 | Web Switch              | ON     | lasciare ON per accedere alla web UI     |
 | Webserver Port          | 80     |                                          |
 | Pass Word               | admin  | consigliato cambiarla                    |
- 
-**Perché attivare 485 Anti-Collision**: è la funzione esclusiva della H7 e il motivo principale della scelta. Con il bus RS485 condiviso col comando cablato della pompa, controlla lo stato del bus e non manda il pin EN in trasmissione mentre il bus è in ricezione, prevenendo le collisioni che causano anomalie di comunicazione.
  
 Cliccare **Save&Apply**.
 
@@ -215,7 +212,7 @@ modbus:
         ...
       # ... tutti gli altri sensori ...
 ```
-> Con la conversione **Modbus TCP** attiva sul gateway (passo 3), si usa `type: tcp`. Se invece si usasse solo il *transparent transmission* (senza conversione), servirebbe `type: rtuovertcp`.
+> Con la conversione **Modbus TCP** attiva sul gateway, si usa `type: tcp`. Se invece si usasse solo il *transparent transmission* (senza conversione), servirebbe `type: rtuovertcp`.
 
 Verifica dopo le modifiche:
 1. **Strumenti per sviluppatori → Controlla configurazione**: deve restituire "Configurazione valida".
@@ -231,7 +228,7 @@ No response received after 3 retries, continue with next request
 Questo indica che la comunicazione fisica arriva fino al gateway, ma lo slave interrogato non replica. La causa più frequente è un **indirizzo slave non corrispondente**.
 
 ## Verifica dell'indirizzo sul modulo idraulico
-L'indirizzo Modbus della pompa si imposta sulla **scheda del modulo idraulico** (unità esterna), tramite un **selettore rotativo (rotary switch) da 0 a F** — oppure, su alcune versioni, un blocco di dip-switch. Il valore è in esadecimale: 0–9 = 0–9, A=10, B=11, C=12, D=13, E=14, F=15.
+L'indirizzo Modbus della pompa si imposta sulla **scheda dell'unità esterna**, tramite un **selettore rotativo (rotary switch) da 0 a F** — oppure, su alcune versioni, un blocco di dip-switch. Il valore è in esadecimale: 0–9 = 0–9, A=10, B=11, C=12, D=13, E=14, F=15.
 
 **Di fabbrica il selettore è impostato su `0`.** Questo è un problema, perché in Modbus l'indirizzo `0` è riservato al broadcast: nessuno slave risponde a una richiesta indirizzata a 0. Con la rotella su `0` la pompa quindi non risponde, e tutti i sensori restano `unavailable`.
 
