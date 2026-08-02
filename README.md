@@ -188,7 +188,7 @@ L'integrazione è organizzata con il sistema dei `package` di Home Assistant, co
     └── auriga_modbus.yaml       # tutta la configurazione Baxi
 ```
 
-Perché Home Assistant carichi la cartella `packages/`, in `configuration.yaml` deve essere presente, dentro il blocco `homeassistant:`, la riga:
+Perché Home Assistant carichi la cartella `packages/`, in `configuration.yaml` deve essere presente la riga:
 
 ```yaml
 homeassistant:
@@ -199,7 +199,7 @@ Note importanti:
 - La chiave `homeassistant:` deve comparire **una sola volta** nel file. Se esiste già (di solito c'è di default), va aggiunta solo la riga `packages: ...` al suo interno con l'indentazione corretta (2 spazi), senza creare un secondo blocco `homeassistant:`.
 - La cartella deve chiamarsi **esattamente** `packages` e trovarsi in `/config/packages/`, perché `!include_dir_named packages` la cerca lì.
 
-Il file del package contiene l'hub Modbus con, al suo interno, l'intera lista dei sensori scritta direttamente (non più tramite `!include`):
+Il file del package contiene l'hub Modbus con, al suo interno, l'intera lista dei sensori:
 
 ```yaml
 modbus:
