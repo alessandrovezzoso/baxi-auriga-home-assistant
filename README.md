@@ -1,24 +1,4 @@
-# Indice
-- [Indice](#indice)
-  - [Baxi Auriga heat pump](#baxi-auriga-heat-pump)
-    - [Descrizione dei termini](#descrizione-dei-termini)
-- [Gateway USR-TCP232-410S-H7](#gateway-usr-tcp232-410s-h7)
-  - [Collegamento fisico](#collegamento-fisico)
-  - [Accesso alla web UI](#accesso-alla-web-ui)
-  - [1. Configurazione di rete (Network → IP Config)](#1-configurazione-di-rete-network--ip-config)
-    - [DNS](#dns)
-  - [2. Parametri seriali (Port → RS485 → Port)](#2-parametri-seriali-port--rs485--port)
-  - [3. Modalità Modbus TCP (Port → RS485 → Socket)](#3-modalità-modbus-tcp-port--rs485--socket)
-  - [4. Impostazioni di sistema (System → System Setting)](#4-impostazioni-di-sistema-system--system-setting)
-  - [5. Isolamento dal cloud (Cloud Service + regola router)](#5-isolamento-dal-cloud-cloud-service--regola-router)
-    - [Livello 1 — Disattivare le funzioni cloud nella web UI](#livello-1--disattivare-le-funzioni-cloud-nella-web-ui)
-    - [Livello 2 — Regola sul router (blocco WAN)](#livello-2--regola-sul-router-blocco-wan)
-    - [Test di verifica](#test-di-verifica)
-  - [Configurazione lato Home Assistant](#configurazione-lato-home-assistant)
-  - [Note sul bus condiviso e più dispositivi](#note-sul-bus-condiviso-e-più-dispositivi)
----
-
-## Baxi Auriga heat pump 
+# Baxi Auriga heat pump 
 
 ### Descrizione dei termini
 | Sigla               | Elemento                         | Significato pratico (Per l'utente)                                                                                                                               |
@@ -86,7 +66,7 @@ Il modulo esce con IP statico di fabbrica **192.168.0.7** (utente/password: **ad
 - Altrimenti usare il tool ufficiale **EthernetTool** (scaricabile dal sito PUSR), che trova il modulo via broadcast anche su sottorete diversa, oppure cercare il nuovo dispositivo nella lista client del router.
 
 
-## 1. Configurazione di rete (Network → IP Config) 
+## Configurazione di rete (Network → IP Config) 
 Il modulo di default può essere in **DHCP/AutoIP** e prendere un IP dal router, ma in DHCP l'IP potrebbe cambiare a un riavvio del router, e Home Assistant perderebbe il contatto (nel file YAML l'IP è fisso).
  
 **Cosa fare** — una delle due:
@@ -103,7 +83,7 @@ Si possono lasciare così senza problemi. Per pulizia, passando a IP statico si 
 ![Configurazione IP](images/02-usr-ip-config.png)
 
 
-## 2. Parametri seriali (Port → RS485 → Port)
+## Parametri seriali (Port → RS485 → Port)
 Impostare i parametri seriali identici a quelli del dispositivo Modbus (per la Baxi Auriga: 9600-8-N-1):
 
 | Campo                       | Valore | Note                |
@@ -126,7 +106,7 @@ Impostare i parametri seriali identici a quelli del dispositivo Modbus (per la B
 Cliccare **Save&Apply**.
 
 
-## 3. Modalità Modbus TCP (Port → RS485 → Socket) 
+## Modalità Modbus TCP (Port → RS485 → Socket) 
 Questa è la parte più importante: attiva la conversione da Modbus TCP (lato rete) a Modbus RTU (lato seriale), che permette di usare `type: tcp` pulito in Home Assistant.
  
 | Campo                     | Valore     | Note                                           |
@@ -152,7 +132,7 @@ Questa è la parte più importante: attiva la conversione da Modbus TCP (lato re
 Cliccare **Save&Apply**.
 
  
-## 4. Impostazioni di sistema (System → System Setting)
+## Impostazioni di sistema (System → System Setting)
  
 ![Configurazione IP](images/05-usr-system-config.png)
  
@@ -173,7 +153,7 @@ Cliccare **Save&Apply**.
 Cliccare **Save&Apply**.
 
  
-## 5. Isolamento dal cloud (Cloud Service + regola router)
+## Isolamento dal cloud (Cloud Service + regola router)
 Per garantire che il modulo resti **completamente locale**, servono due livelli di protezione complementari.
  
 ### Livello 1 — Disattivare le funzioni cloud nella web UI
@@ -190,7 +170,7 @@ Sul router, creare una regola che **nega l'accesso a internet (WAN)** all'IP del
  
 Questo impedisce fisicamente al modulo di raggiungere internet, a prescindere dalle sue impostazioni interne.
  
-### Test di verifica
+## Test di verifica
 Dopo aver applicato entrambi i livelli, verificare che tutto continui a funzionare con la WAN bloccata:
 - la web UI del modulo resta raggiungibile in LAN
 - Home Assistant continua a leggere i registri
@@ -216,7 +196,52 @@ modbus:
 **Primo test consigliato**: partire in sola lettura, verificare che un paio di sensori (es. temperatura esterna, temperatura acqua uscita) riportino valori coerenti col display della pompa. Se sì, la catena funziona end-to-end. Solo dopo abilitare le scritture.
  
 > Se al primo tentativo si ottengono solo timeout con parametri seriali corretti, il primo sospettato è lo **Slave ID** (indirizzo Modbus del dispositivo, spesso impostato da un rotary switch sul PCB).
- 
+
+Se dopo il riavvio di Home Assistant tutti i sensori Modbus restano su `unknown` o `unavailable`, significa che le richieste partono ma la pompa di calore non risponde. Nei log (Impostazioni → Sistema → Log, filtro `modbus`) si vede tipicamente:
+
+```
+No response received after 3 retries, continue with next request
+```
+
+Questo indica che la comunicazione fisica arriva fino al gateway, ma lo slave interrogato non replica. La causa più frequente è un **indirizzo slave non corrispondente**.
+
+### Verifica dell'indirizzo sul modulo idraulico
+L'indirizzo Modbus della pompa si imposta sulla **scheda del modulo idraulico** (unità esterna), tramite un **selettore rotativo (rotary switch) da 0 a F** — oppure, su alcune versioni, un blocco di dip-switch. Il valore è in esadecimale: 0–9 = 0–9, A=10, B=11, C=12, D=13, E=14, F=15.
+
+**Di fabbrica il selettore è impostato su `0`.** Questo è un problema, perché in Modbus l'indirizzo `0` è riservato al broadcast: nessuno slave risponde a una richiesta indirizzata a 0. Con la rotella su `0` la pompa quindi non risponde, e tutti i sensori restano `unavailable`.
+
+È necessario quindi portare il selettore su `1` e impostare `slave: 1` nella configurazione Home Assistant (già il valore usato in questi file).
+In alternativa, qualsiasi valore da 1 a F va bene, purché il numero sul selettore coincida con il campo `slave:` di tutti i sensori.
+
+![Configurazione DIP switch](images/02-baxi-dip-switch.png)
+
+
+### Se l'indirizzo è corretto ma i sensori restano vuoti
+
+Verificare in quest'ordine:
+
+1. **Tipo di connessione in HA** (`type: tcp` vs `type: rtuovertcp`):
+   deve corrispondere alla modalità di lavoro impostata sul gateway
+   (trasparente → `rtuovertcp`; conversione Modbus-TCP → `tcp`).
+2. **Parametri seriali del gateway**: 9600 baud, 8 data bit, parità NONE,
+   1 stop bit — impostati lato gateway, devono coincidere con quelli
+   della pompa.
+3. **Cablaggio RS-485 su H1/H2**: se A e B sono invertiti il bus non
+   comunica; provare a scambiare i due fili (operazione innocua).
+4. **Prima lettura fallita su sensori lenti**: un sensore con
+   `scan_interval` alto (es. 3600 s) che fallisce la lettura iniziale
+   riprova solo allo scadere dell'intervallo. Dopo aver risolto la
+   comunicazione, eseguire un **riavvio pulito con il gateway già
+   attivo**, così la prima lettura va a buon fine per tutti i sensori.
+
+
+
+
+
+
+
+
+
 ---
  
 ## Note sul bus condiviso e più dispositivi
