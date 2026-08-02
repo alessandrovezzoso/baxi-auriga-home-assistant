@@ -240,15 +240,6 @@ In alternativa, qualsiasi valore da 1 a F va bene, purché il numero sul seletto
 
 ![Configurazione DIP switch](images/02-baxi-dip-switch.png)
 
-
-
-
-
-
-
-
-
-
 ---
  
 ## Note sul bus condiviso e più dispositivi
