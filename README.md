@@ -194,8 +194,6 @@ modbus:
 > Con la conversione **Modbus TCP** attiva sul gateway (passo 3), si usa `type: tcp`. Se invece si usasse solo il *transparent transmission* (senza conversione), servirebbe `type: rtuovertcp`.
  
 **Primo test consigliato**: partire in sola lettura, verificare che un paio di sensori (es. temperatura esterna, temperatura acqua uscita) riportino valori coerenti col display della pompa. Se sì, la catena funziona end-to-end. Solo dopo abilitare le scritture.
- 
-> Se al primo tentativo si ottengono solo timeout con parametri seriali corretti, il primo sospettato è lo **Slave ID** (indirizzo Modbus del dispositivo, spesso impostato da un rotary switch sul PCB).
 
 Se dopo il riavvio di Home Assistant tutti i sensori Modbus restano su `unknown` o `unavailable`, significa che le richieste partono ma la pompa di calore non risponde. Nei log (Impostazioni → Sistema → Log, filtro `modbus`) si vede tipicamente:
 
@@ -215,24 +213,6 @@ In alternativa, qualsiasi valore da 1 a F va bene, purché il numero sul seletto
 
 ![Configurazione DIP switch](images/02-baxi-dip-switch.png)
 
-
-### Se l'indirizzo è corretto ma i sensori restano vuoti
-
-Verificare in quest'ordine:
-
-1. **Tipo di connessione in HA** (`type: tcp` vs `type: rtuovertcp`):
-   deve corrispondere alla modalità di lavoro impostata sul gateway
-   (trasparente → `rtuovertcp`; conversione Modbus-TCP → `tcp`).
-2. **Parametri seriali del gateway**: 9600 baud, 8 data bit, parità NONE,
-   1 stop bit — impostati lato gateway, devono coincidere con quelli
-   della pompa.
-3. **Cablaggio RS-485 su H1/H2**: se A e B sono invertiti il bus non
-   comunica; provare a scambiare i due fili (operazione innocua).
-4. **Prima lettura fallita su sensori lenti**: un sensore con
-   `scan_interval` alto (es. 3600 s) che fallisce la lettura iniziale
-   riprova solo allo scadere dell'intervallo. Dopo aver risolto la
-   comunicazione, eseguire un **riavvio pulito con il gateway già
-   attivo**, così la prima lettura va a buon fine per tutti i sensori.
 
 
 
