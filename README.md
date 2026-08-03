@@ -82,6 +82,8 @@ Si possono lasciare così senza problemi. Per pulizia, passando a IP statico si 
 
 ![Configurazione IP](images/02-usr-ip-config.png)
 
+Cliccare **Save&Apply**.
+
 
 ## Parametri seriali (Port → RS485 → Port)
 Impostare i parametri seriali identici a quelli del dispositivo Modbus 
