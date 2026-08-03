@@ -89,12 +89,12 @@ modbus:
         input_type: holding
 
       # Curve selection
-      # Value between 1 and 8
-      - name: "Curve selection"
+      # Value between 1 and 8 (8 bit heating, 8 bit cooling)
+      - name: "Curve selection RAW"
         address: 6
         scan_interval: 300
         slave: 1
-        unique_id: auriga_curve_selection
+        unique_id: auriga_raw_curve_selection
         data_type: uint16
         input_type: holding
 
@@ -578,3 +578,12 @@ template:
         state_class: measurement
         state: >
           {{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
+
+      # Curve selection (register address: 6)
+      - name: "Heating curve selection"
+        state: >
+          {{ states('sensor.curve_selection_raw') | int(0) % 256 }}
+
+      - name: "Cooling curve selection"
+        state: >
+          {{ states('sensor.curve_selection_raw') | int(0) // 256 }}
