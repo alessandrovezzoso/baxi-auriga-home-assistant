@@ -100,10 +100,10 @@ Impostare i parametri seriali identici a quelli del dispositivo Modbus
 | Sync Baudrate (RFC2217)     | OFF    | Il default è ON     |
 | Uart Heartbeat Type         | NONE   |                     |
 
-![Configurazione RS485 Port](images/03-usr-rs485-port-config.png)
-
 **Perché disattivare Sync Baudrate (RFC2217)?**: questa funzione permette a un software di rete di cambiare al volo i parametri seriali inviando un pacchetto speciale. Con Modbus non serve e potrebbe alterare il baud rate in modo indesiderato. Meglio bloccarlo su OFF così il baud rate resta fisso.
  
+![Configurazione RS485 Port](images/03-usr-rs485-port-config.png)
+
 Cliccare **Save&Apply**.
 
 
