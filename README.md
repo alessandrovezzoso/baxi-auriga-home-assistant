@@ -33,7 +33,6 @@ La serie USR-TCP232-410s esiste in **quattro varianti hardware**, rilasciate in 
 | SSL/TLS                    | NO        | NO        | NO        | SI        |
 | 485 Anti-Collision         | NO        | NO        | NO        | SI        |
 | NTP                        | NO        | NO        | NO        | SI        |
-| Firmware                   | 30xx      | 71xx      | 80xx      | 72xx      |
  
 Ho scelto la variante **H7** per tre motivi concreti legati al mio impianto — non per il generico "ha più funzioni":
 1. **485 Anti-Collision**: è la funzione decisiva. Il bus RS485 della pompa di calore è **condiviso con il comando cablato** della macchina. Questa funzione impedisce al gateway di trasmettere mentre il bus è occupato dal comando cablato, prevenendo le collisioni che causano errori di comunicazione intermittenti. È l'unica variante che ce l'ha, ed è mirata esattamente a questo scenario.
@@ -46,6 +45,7 @@ La corrispondenza è inequivocabile:
 ![Variante gateway](images/01-usr-version-type.png)
  
 Consiglio di acquistare da un venditore con reso facile e specificare per iscritto nell'ordine che si vuole la versione H7. Alla consegna, verificare il tipo prima di installarlo.
+
 
 ## Collegamento fisico
 - **Alimentazione**: 5–36 V DC (alimentatore in dotazione). Il modulo non è PoE.
@@ -70,7 +70,8 @@ Il modulo di default può essere in **DHCP/AutoIP** e prendere un IP dal router,
  
 **Cosa fare** — una delle due:
 - Impostare **Method of IP Obtaining → Static IP** e fissare un IP libero della propria rete, **oppure**
-- Lasciare DHCP e fare una **reservation** sul router (IP legato al MAC del modulo). *Soluzione consigliata*: si gestisce tutto da un punto solo.
+- Lasciare DHCP e fare una **reservation** sul router (IP legato al MAC del modulo). 
+  *Soluzione consigliata*: si gestisce tutto da un punto solo.
  
 ### DNS
 Nella stessa pagina compaiono due DNS di default: **114.114.114.114** e **223.5.5.5**. Sono **DNS pubblici cinesi** (114DNS e AliDNS), preimpostati dal produttore perché il dispositivo è di origine cinese.
@@ -83,7 +84,8 @@ Si possono lasciare così senza problemi. Per pulizia, passando a IP statico si 
 
 
 ## Parametri seriali (Port → RS485 → Port)
-Impostare i parametri seriali identici a quelli del dispositivo Modbus (per la Baxi Auriga: 9600-8-N-1):
+Impostare i parametri seriali identici a quelli del dispositivo Modbus 
+(per la Baxi Auriga: **9600-8-N-1**):
 
 | Campo                       | Valore | Note                |
 |---                          |---     |---                  |
@@ -123,17 +125,15 @@ Questa è la parte più importante: attiva la conversione da Modbus TCP (lato re
 | Modbus TCP Exception      | NO         | Vedi nota sotto                                |
 | Net Heartbeat Type        | NONE       |                                                |
 | SOCKET B → Operating Mode | None       | non serve                                      |
-
-![Configurazione RS485 Socket](images/04-usr-rs485-socket-config.png)
  
 **Modbus TCP Exception**: in fase di **debug iniziale** può essere utile attivarlo temporaneamente: fa sì che Home Assistant riceva i codici di errore Modbus (es. "illegal address") invece di un timeout generico, aiutando a capire perché un registro non risponde. A regime si può lasciare OFF.
+
+![Configurazione RS485 Socket](images/04-usr-rs485-socket-config.png)
  
 Cliccare **Save&Apply**.
 
  
 ## Impostazioni di sistema (System → System Setting)
- 
-![Configurazione sistema](images/05-usr-system-config.png)
  
 | Campo                   | Valore | Note                                     |
 |---                      |---     |---                                       |
@@ -146,7 +146,9 @@ Cliccare **Save&Apply**.
 | Web Switch              | ON     | lasciare ON per accedere alla web UI     |
 | Webserver Port          | 80     |                                          |
 | Pass Word               | admin  | consigliato cambiarla                    |
- 
+
+![Configurazione sistema](images/05-usr-system-config.png)
+
 Cliccare **Save&Apply**.
 
  
@@ -166,12 +168,6 @@ Questo dice al modulo di non tentare connessioni verso l'esterno.
 Sul router, creare una regola che **nega l'accesso a internet (WAN)** all'IP del modulo, lasciando intatta la comunicazione **LAN**. Consigliato agganciare la regola al **MAC address** del modulo (o prima fare una reservation DHCP e poi bloccare l'IP ormai stabile), così resta valida anche se l'IP cambiasse.
  
 Questo impedisce fisicamente al modulo di raggiungere internet, a prescindere dalle sue impostazioni interne.
- 
-## Test di verifica
-Dopo aver applicato entrambi i livelli, verificare che tutto continui a funzionare con la WAN bloccata:
-- la web UI del modulo resta raggiungibile in LAN
-- Home Assistant continua a leggere i registri
-Se entrambe funzionano a internet tagliato, è la conferma pratica che il modulo non ha alcuna dipendenza dal cloud.
 
 ---
  
@@ -236,11 +232,3 @@ L'indirizzo Modbus della pompa si imposta sulla **scheda dell'unità esterna**, 
 In alternativa, qualsiasi valore da 1 a F va bene, purché il numero sul selettore coincida con il campo `slave:` di tutti i sensori.
 
 ![Configurazione DIP switch](images/02-baxi-dip-switch.png)
-
----
- 
-## Note sul bus condiviso e più dispositivi
- 
-- Il bus RS485 verso la pompa è **condiviso con il comando cablato**: non essere aggressivi col polling (intervalli di 10–15 s lato Home Assistant sono più che sufficienti per le temperature di una pompa di calore).
-- **Terminazione**: su bus lunghi servono resistenze da 120 Ω alle estremità; su tratte brevi (pochi metri) spesso non sono necessarie.
-- **Più dispositivi sullo stesso gateway?** Modbus RTU è multi-drop (fino a 16 slave su questo USR, con Slave ID diversi), ma **conviene solo** se i dispositivi sono fisicamente vicini, condividono gli stessi parametri seriali e il cablaggio a catena è comodo. Per dispositivi distanti o con parametri diversi (es. un inverter fotovoltaico vicino al quadro) è **più pulito e affidabile un secondo gateway dedicato**, con il suo bus separato e un secondo hub `modbus:` in Home Assistant.
