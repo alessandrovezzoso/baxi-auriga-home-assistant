@@ -80,11 +80,11 @@ modbus:
       # BIT10: Eco mode
       # BIT11: DHW pump is running constant-temperature water recycling
       # BIT12: Curve setting (0:disabled; 1:enabled)
-      - name: "Function setting"
+      - name: "Function setting RAW"
         address: 5
         scan_interval: 30
         slave: 1
-        unique_id: auriga_function_setting
+        unique_id: auriga_raw_function_setting
         data_type: uint16
         input_type: holding
 
@@ -564,26 +564,58 @@ modbus:
 
 template:
   - sensor:
-      # Setting water temperature (register address: 2)
-      - name: "Setting heating water temperature"
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
-        state: >
-          {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}
+    # Setting water temperature (register address: 2)
+    - name: "Setting heating water temperature"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      state: >
+        {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}
+    - name: "Setting cooling water temperature"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      state: >
+        {{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
 
-      - name: "Setting cooling water temperature"
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
-        state: >
-          {{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
-
-      # Curve selection (register address: 6)
-      - name: "Heating curve selection"
-        state: >
-          {{ states('sensor.curve_selection_raw') | int(0) % 256 }}
-
-      - name: "Cooling curve selection"
-        state: >
-          {{ states('sensor.curve_selection_raw') | int(0) // 256 }}
+    # Curve selection (register address: 6)
+    - name: "Heating curve selection"
+      state: >
+        {{ states('sensor.curve_selection_raw') | int(0) % 256 }}
+    - name: "Cooling curve selection"
+      state: >
+        {{ states('sensor.curve_selection_raw') | int(0) // 256 }}
+    
+    # Function setting (register address: 5)
+    - name: "Silent mode level"
+      state: >
+        {% set val = states('sensor.function_setting_raw') | int(0) %}
+        {{ 2 if val | bitwise_and(128) > 0 else 1 }}
+  
+  - binary_sensor:
+    # Function setting (register address: 5)
+    # BIT4: Disinfect
+    - name: "Disinfect"
+      device_class: running
+      state: >
+        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(16) > 0 }}
+    # BIT6: Silent mode
+    - name: "Silent mode"
+      device_class: running
+      state: >
+        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(64) > 0 }}
+    # BIT10: Eco mode
+    - name: "Eco mode"
+      device_class: running
+      state: >
+        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(1024) > 0 }}
+    # BIT11: DHW pump is running constant-temperature water recycling
+    - name: "DHW water recycling"
+      device_class: running
+      state: >
+        states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}
+    # BIT12: Curve setting (0:disabled; 1:enabled)
+    - name: "Climate curve"
+      device_class: running
+      state: >
+        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(4096) > 0 }}
