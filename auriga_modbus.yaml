@@ -35,12 +35,12 @@ modbus:
         data_type: uint16
         input_type: holding
 
-      # Setting water temperature T1s
-      - name: "Setting water temperature"
+      # Setting water temperature T1s (8 bit heating, 8 bit cooling)
+      - name: "Setting water temperature T1s RAW"
         address: 2
         scan_interval: 60
         slave: 1
-        unique_id: auriga_setting_water_temperature_t1s
+        unique_id: auriga_raw_setting_water_temperature_t1s
         data_type: int16
         input_type: holding
         unit_of_measurement: "°C"
@@ -561,3 +561,20 @@ modbus:
 
 
       # SETTING PARAMETERS ################################################################
+
+template:
+  - sensor:
+      # Setting water temperature (register address: 2)
+      - name: "Setting heating water temperature"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}
+
+      - name: "Setting cooling water temperature"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
