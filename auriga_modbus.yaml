@@ -7,6 +7,7 @@ modbus:
     timeout: 5                          # Timeout while waiting for a response in seconds
     message_wait_milliseconds: 100      # Time to wait in milliseconds between requests
 
+    ### SENSORS ################################################################################################
     sensors:
       # SETTING PARAMETERS ################################################################
 
@@ -557,62 +558,404 @@ modbus:
         state_class: measurement
 
 
-      # SETTING PARAMETERS ################################################################
-
+### TEMPLATE ###############################################################################################
 template:
-  - sensor:
-    # Setting water temperature (register address: 2)
-    - name: "Setting heating water temperature"
-      unit_of_measurement: "°C"
-      device_class: temperature
-      state_class: measurement
+  ## Select ################################################################################################
+  - select:
+    # Operating mode (register no.1)
+    - name: "Setting operating mode"
+      unique_id: auriga_setting_operating_mode
+      options: "{{ ['Auto', 'Cooling', 'Heating'] }}"
       state: >
-        {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}
-    - name: "Setting cooling water temperature"
-      unit_of_measurement: "°C"
-      device_class: temperature
-      state_class: measurement
-      state: >
-        {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
-
-    # Curve selection (register address: 6)
-    - name: "Heating curve selection"
-      state: >
-        {{ states('sensor.curve_selection_raw') | int(0) % 256 }}
-    - name: "Cooling curve selection"
-      state: >
-        {{ states('sensor.curve_selection_raw') | int(0) // 256 }}
-    
-    # Function setting (register address: 5)
-    - name: "Silent mode level"
-      state: >
-        {% set val = states('sensor.function_setting_raw') | int(0) %}
-        {{ 2 if val | bitwise_and(128) > 0 else 1 }}
+        {% set m = states('sensor.setting_mode') | int(0) %}
+        {% if m == 1 %}Auto
+        {% elif m == 2 %}Cooling
+        {% elif m == 3 %}Heating
+        {% endif %}
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 1
+            value: >
+              {% if option == 'Auto' %}1
+              {% elif option == 'Cooling' %}2
+              {% elif option == 'Heating' %}3
+              {% endif %}
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.setting_mode
   
-  - binary_sensor:
-    # Function setting (register address: 5)
-    # BIT4: Disinfect
+    # Silent mode switch + silent mode level (register no.5: BIT6 = on/off, BIT7 = level)
+    - name: "Setting silent mode"
+      unique_id: auriga_setting_silent_mode
+      options: "{{ ['Not active', 'Level 1', 'Level 2'] }}"
+      state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(64) == 0 else ('Level 2' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(128) > 0 else 'Level 1') }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ (states('sensor.function_setting_raw') | int(0) | bitwise_and(65471)) if option == 'Not active' else ((states('sensor.function_setting_raw') | int(0) | bitwise_or(64) | bitwise_and(65407)) if option == 'Level 1' else (states('sensor.function_setting_raw') | int(0) | bitwise_or(192))) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+    # Heating curve (register no.6: low byte + register no.5: BIT12)
+    - name: "Heating curve selection"
+      unique_id: auriga_setting_heating_curve
+      options: "{{ ['Not active', '1', '2', '3', '4', '5', '6', '7', '8'] }}"
+      state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(4096) == 0 else (states('sensor.curve_selection_raw') | int(0) % 256) | string }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ (states('sensor.function_setting_raw') | int(0) | bitwise_and(61439)) if option == 'Not active' else (states('sensor.function_setting_raw') | int(0) | bitwise_or(4096)) }}"
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 6
+            value: "{{ states('sensor.curve_selection_raw') | int(0) if option == 'Not active' else ((states('sensor.curve_selection_raw') | int(0) // 256) * 256 + (option | int)) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id:
+              - sensor.function_setting_raw
+              - sensor.curve_selection_raw
+
+    # Cooling curve (register no.6: high byte + register no.5: BIT12)
+    - name: "Cooling curve selection"
+      unique_id: auriga_setting_cooling_curve
+      options: "{{ ['Not active', '1', '2', '3', '4', '5', '6', '7', '8'] }}"
+      state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(4096) == 0 else (states('sensor.curve_selection_raw') | int(0) // 256) | string }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ (states('sensor.function_setting_raw') | int(0) | bitwise_and(61439)) if option == 'Not active' else (states('sensor.function_setting_raw') | int(0) | bitwise_or(4096)) }}"
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 6
+            value: "{{ states('sensor.curve_selection_raw') | int(0) if option == 'Not active' else ((option | int) * 256 + (states('sensor.curve_selection_raw') | int(0) % 256)) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id:
+              - sensor.function_setting_raw
+              - sensor.curve_selection_raw
+
+  ## Number ################################################################################################
+  - number:
+    # Heating water temperature (register no.2, low byte)
+    - name: "Setting heating water temperature"
+      unique_id: auriga_setting_heating_water_temperature
+      unit_of_measurement: "°C"
+      device_class: temperature
+      min: 35
+      max: 60
+      step: 1
+      state: "{{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}"
+      set_value:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 2
+            value: "{{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256) * 256 + (value | int) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.setting_water_temperature_t1s_raw
+ 
+    # Cooling water temperature (register no.2, high byte)
+    - name: "Setting cooling water temperature"
+      unique_id: auriga_setting_cooling_water_temperature
+      unit_of_measurement: "°C"
+      device_class: temperature
+      min: 5
+      max: 25
+      step: 1
+      state: "{{ states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}"
+      set_value:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 2
+            value: "{{ (value | int) * 256 + (states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.setting_water_temperature_t1s_raw
+
+    # Domestic hot water temperature (register no.4)
+    - name: "Setting domestic hot water temperature"
+      unique_id: auriga_setting_domestic_hot_water_temperature
+      unit_of_measurement: "°C"
+      device_class: temperature
+      min: 40
+      max: 60
+      step: 1
+      state: "{{ states('sensor.setting_water_tank_temperature') | int(0) }}"
+      set_value:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 4
+            value: "{{ value | int }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.setting_water_tank_temperature
+ 
+  ## Switch ################################################################################################
+  - switch:
+    # Disinfect (register no.5: BIT4)
     - name: "Disinfect"
-      device_class: running
-      state: >
-        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(16) > 0 }}
-    # BIT6: Silent mode
+      unique_id: auriga_disinfect
+      state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(16) > 0 }}"
+      turn_on:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_or(16) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+      turn_off:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(65519) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+    # Silent mode (register no.5: BIT6)
     - name: "Silent mode"
-      device_class: running
-      state: >
-        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(64) > 0 }}
-    # BIT10: Eco mode
+      unique_id: auriga_silent_mode
+      state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(64) > 0 }}"
+      turn_on:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_or(64) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+      turn_off:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(65471) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+    # ECO mode (register no.5: BIT10)
     - name: "Eco mode"
-      device_class: running
-      state: >
-        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(1024) > 0 }}
-    # BIT11: DHW pump is running constant-temperature water recycling
+      unique_id: auriga_eco_mode
+      state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(1024) > 0 }}"
+      turn_on:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_or(1024) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+      turn_off:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(64511) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+    # DHW water recycling (register no.5: BIT11)
     - name: "DHW water recycling"
-      device_class: running
-      state: >
-        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}
-    # BIT12: Curve setting (0:disabled; 1:enabled)
+      unique_id: auriga_dhw_water_recycling
+      state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}"
+      turn_on:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_or(2048) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+      turn_off:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(63487) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+    # Climate curve (register no.5: BIT12)
     - name: "Climate curve"
+      unique_id: auriga_climate_curve
+      state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(4096) > 0 }}"
+      turn_on:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_or(4096) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+      turn_off:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 5
+            value: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(61439) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.function_setting_raw
+
+  ## Binary sensor #########################################################################################
+  - binary_sensor:
+    # IBH1 electric heater (register no.129: BIT0)
+    - name: "Load IBH1 electric heater"
+      unique_id: auriga_load_ibh1
       device_class: running
-      state: >
-        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(4096) > 0 }}
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1) > 0 }}"
+
+    # TBH electric heater (register no.129: BIT2)
+    - name: "Load TBH electric heater"
+      unique_id: auriga_load_tbh
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4) > 0 }}"
+
+    # PUMP_I water pump (register no.129: BIT3)
+    - name: "Load water pump PUMP_I"
+      unique_id: auriga_load_pumpi
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(8) > 0 }}"
+
+    # SV1 (register no.129: BIT4)
+    - name: "Load SV1"
+      unique_id: auriga_load_sv1
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(16) > 0 }}"
+
+    # P_o external water pump (register no.129: BIT6)
+    - name: "Load external water pump P_o"
+      unique_id: auriga_load_po
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(64) > 0 }}"
+
+    # P_d return water pump (register no.129: BIT7)
+    - name: "Load water return pump P_d"
+      unique_id: auriga_load_pd
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(128) > 0 }}"
+
+    # P_c mixed water pump (register no.129: BIT8)
+    - name: "Load mixed water pump P_c"
+      unique_id: auriga_load_pc
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(256) > 0 }}"
+
+    # SV2 (register no.129: BIT9)
+    - name: "Load SV2"
+      unique_id: auriga_load_sv2
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(512) > 0 }}"
+
+    # HEAT4 (register no.129: BIT10)
+    - name: "Load HEAT4"
+      unique_id: auriga_load_heat4
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1024) > 0 }}"
+
+    # Solar water pump (register no.129: BIT11)
+    - name: "Load solar water pump"
+      unique_id: auriga_load_solar_pump
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(2048) > 0 }}"
+
+    # ALARM (register no.129: BIT12)
+    - name: "Load alarm"
+      unique_id: auriga_load_alarm
+      device_class: problem
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4096) > 0 }}"
+
+    # RUN (register no.129: BIT13)
+    - name: "Load run"
+      unique_id: auriga_load_run
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(8192) > 0 }}"
+
+    # External heater (register no.129: BIT14)
+    - name: "Load external heater"
+      unique_id: auriga_load_external_heater
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(16384) > 0 }}"
+
+    # DEFROST (register no.129: BIT15)
+    - name: "Load defrost"
+      unique_id: auriga_load_defrost
+      device_class: running
+      state: "{{ states('sensor.load_output') | int(0) | bitwise_and(32768) > 0 }}"
