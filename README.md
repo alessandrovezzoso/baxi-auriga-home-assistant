@@ -22,24 +22,24 @@ Di seguito viene riportato l'elenco di tutti i sensori acquisiti via modbus
 
 ### 1. Parametri di Impostazione
 
-| Nome Entità | Tipo | Indirizzo (Register) | Unique ID | Descrizione / Valori |
+| Nome Entità | Tipo | Registro | Descrizione / Valori |
 | :--- | :--- | :--- | :--- | :--- |
-| `sensor.system_power_state` | Holding (`uint16`) | `0` | `auriga_system_power_state` | Bitmask stato accensione (BIT0: Riscaldamento, BIT1: Clima Z1, BIT2: ACS, BIT3: Clima Z2) |
-| `sensor.setting_mode` | Holding (`uint16`) | `1` | `auriga_setting_mode` | Modalità impostata (1: Auto, 2: Cool, 3: Heat) |
-| `sensor.setting_water_temperature_t1s_raw` | Holding (`int16`) | `2` | `auriga_raw_setting_water_temperature_t1s` | Setpoint grezzo T1s (Byte basso: Riscaldamento, Byte alto: Raffrescamento) |
-| `sensor.setting_air_temperature` | Holding (`int16`) | `3` | `auriga_setting_air_temperature_ts` | Temperatura aria impostata Ts (17 - 30 °C) |
-| `sensor.setting_water_tank_temperature` | Holding (`int16`) | `4` | `auriga_setting_water_tank_temperature_t5s` | Setpoint accumulo ACS T5s (40 - 60 °C) |
-| `sensor.function_setting_raw` | Holding (`uint16`) | `5` | `auriga_raw_function_setting` | Bitmask funzioni speciali (Disinfezione, Silent, Eco, Ricircolo, Curva) |
-| `sensor.curve_selection_raw` | Holding (`uint16`) | `6` | `auriga_raw_curve_selection` | Selezione curva (1-8) (Byte basso: Riscaldamento, Byte alto: Raffrescamento) |
-| `sensor.forced_water_heating` | Holding (`uint16`) | `7` | `auriga_forced_water_heating` | Riscaldamento acqua forzato (0: Invalido, 2: Forzato ON, 3: Forzato OFF) |
-| `sensor.forced_electric_water_tank_heater` | Holding (`uint16`) | `8` | `auriga_forced_tbh` | Resistenza elettrica accumulo forzata (0: Invalido, 2: ON, 3: OFF) |
-| `sensor.forced_electric_heater` | Holding (`uint16`) | `9` | `auriga_forced_ibh1` | Resistenza elettrica integrativa forzata (0: Invalido, 2: ON, 3: OFF) |
+| `sensor.system_power_state`                | Holding (`uint16`) | `0` | Bitmask stato accensione (BIT0: Riscaldamento, BIT1: Clima Z1, BIT2: ACS, BIT3: Clima Z2) |
+| `sensor.setting_mode`                      | Holding (`uint16`) | `1` | Modalità impostata (1: Auto, 2: Cool, 3: Heat)                                            |
+| `sensor.setting_water_temperature_t1s_raw` | Holding (`int16`)  | `2` | Setpoint grezzo T1s (Byte basso: Riscaldamento, Byte alto: Raffrescamento)                |
+| `sensor.setting_air_temperature`           | Holding (`int16`)  | `3` | Temperatura aria impostata Ts (17 - 30 °C)                                                |
+| `sensor.setting_water_tank_temperature`    | Holding (`int16`)  | `4` | Setpoint accumulo ACS T5s (40 - 60 °C)                                                    |
+| `sensor.function_setting_raw`              | Holding (`uint16`) | `5` | Bitmask funzioni speciali (Disinfezione, Silent, Eco, Ricircolo, Curva)                   |
+| `sensor.curve_selection_raw`               | Holding (`uint16`) | `6` | Selezione curva (1-8) (Byte basso: Riscaldamento, Byte alto: Raffrescamento)              |
+| `sensor.forced_water_heating`              | Holding (`uint16`) | `7` | Riscaldamento acqua forzato (0: Invalido, 2: Forzato ON, 3: Forzato OFF)                  |
+| `sensor.forced_electric_water_tank_heater` | Holding (`uint16`) | `8` | Resistenza elettrica accumulo forzata (0: Invalido, 2: ON, 3: OFF)                        |
+| `sensor.forced_electric_heater`            | Holding (`uint16`) | `9` | Resistenza elettrica integrativa forzata (0: Invalido, 2: ON, 3: OFF)                     |
 
 ---
 
 ### 2. Parametri di Funzionamento
 
-| Nome Entità | Tipo | Indirizzo (Register) | Unique ID | Unità / Note |
+| Nome Entità | Tipo | Registro | Unique ID | Unità / Note |
 | :--- | :--- | :--- | :--- | :--- |
 | `sensor.compressor_operating_frequency` | Holding (`uint16`) | `100` | `auriga_operating_frequency` | `Hz` (Frequenza compressore) |
 | `sensor.operating_mode` | Holding (`uint16`) | `101` | `auriga_operating_mode` | Stato operativo (0: Off, 2: Cooling, 3: Heating) |
