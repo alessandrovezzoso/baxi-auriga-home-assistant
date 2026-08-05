@@ -43,9 +43,6 @@ modbus:
         unique_id: auriga_raw_setting_water_temperature_t1s
         data_type: int16
         input_type: holding
-        unit_of_measurement: "°C"
-        device_class: temperature
-        state_class: measurement
 
       # Setting water temperature Ts
       # Value between 17 and 30 °C and is valid when there is Ta
@@ -576,7 +573,7 @@ template:
       device_class: temperature
       state_class: measurement
       state: >
-        {{ (states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
+        {{ states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}
 
     # Curve selection (register address: 6)
     - name: "Heating curve selection"
@@ -613,7 +610,7 @@ template:
     - name: "DHW water recycling"
       device_class: running
       state: >
-        states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}
+        {{ states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}
     # BIT12: Curve setting (0:disabled; 1:enabled)
     - name: "Climate curve"
       device_class: running
