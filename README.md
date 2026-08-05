@@ -23,7 +23,7 @@ Di seguito viene riportato l'elenco di tutti i sensori acquisiti via modbus
 ### 1. Parametri di Impostazione
 
 | Nome Entità | Tipo | Registro | Descrizione / Valori |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | `sensor.system_power_state`                | Holding (`uint16`) | `0` | Bitmask stato accensione (BIT0: Riscaldamento, BIT1: Clima Z1, BIT2: ACS, BIT3: Clima Z2) |
 | `sensor.setting_mode`                      | Holding (`uint16`) | `1` | Modalità impostata (1: Auto, 2: Cool, 3: Heat)                                            |
 | `sensor.setting_water_temperature_t1s_raw` | Holding (`int16`)  | `2` | Setpoint grezzo T1s (Byte basso: Riscaldamento, Byte alto: Raffrescamento)                |
