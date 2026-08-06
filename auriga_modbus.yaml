@@ -97,7 +97,7 @@ modbus:
         input_type: holding
 
       # Forced water heating
-      # (0: invalid, 2: forced on, 3: forced off)
+      # (0: invalid, 1: forced on, 2: forced off)
       - name: "Forced water heating"
         address: 7
         scan_interval: 60
@@ -107,7 +107,7 @@ modbus:
         input_type: holding
 
       # Forced electric water tank heater
-      # (0: invalid, 2: forced on, 3: forced off)
+      # (0: invalid, 1: forced on, 2: forced off)
       - name: "Forced electric water tank heater"
         address: 8
         scan_interval: 60
@@ -117,7 +117,7 @@ modbus:
         input_type: holding
 
       # Forced water heating
-      # (0: invalid, 2: forced on, 3: forced off)
+      # (0: invalid, 1: forced on, 2: forced off)
       - name: "Forced electric heater"
         address: 9
         scan_interval: 60
