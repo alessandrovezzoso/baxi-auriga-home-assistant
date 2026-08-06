@@ -407,7 +407,7 @@ modbus:
 
       # Load output
       # BIT0: Electric heater IBH1
-      # BIT2: Electric heater TBH
+      # BIT2: Domestic hot water electric heater TBH
       # BIT3: Water pump PUMPI
       # BIT4: SV1
       # BIT6: External water pump P_o
@@ -882,7 +882,7 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1) > 0 }}"
 
-    # TBH electric heater (register no.129: BIT2)
+    # Domestic hot water electric heater TBH (register no.129: BIT2)
     - name: "Load TBH electric heater"
       unique_id: auriga_load_tbh
       device_class: running
