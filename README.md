@@ -19,80 +19,126 @@
 
 ## Mappa dei sensori e registri modbus
 Di seguito viene riportato l'elenco di tutti i sensori acquisiti via modbus
-
-### 1. Parametri di Impostazione
-
-| Nome Entità | Tipo | Registro | Descrizione / Valori |
-| :--- | :--- | :--- | :--- |
-| `sensor.system_power_state`                | Holding (`uint16`) | `0` | Bitmask stato accensione                                 |
-| `sensor.setting_mode`                      | Holding (`uint16`) | `1` | Modalità impostata                                       |
-| `sensor.setting_water_temperature_t1s_raw` | Holding (`int16`)  | `2` | Setpoint temperatura T1s (riscaldamento e affrescamento) |
-| `sensor.setting_air_temperature`           | Holding (`int16`)  | `3` | Setpoint temperatura aria Ts                             |
-| `sensor.setting_water_tank_temperature`    | Holding (`int16`)  | `4` | Setpoint accumulo ACS T5s                                |
-| `sensor.function_setting_raw`              | Holding (`uint16`) | `5` | Bitmask funzioni speciali                                |
-| `sensor.curve_selection_raw`               | Holding (`uint16`) | `6` | Selezione curva (riscaldamento, raffrescamento)          |
-| `sensor.forced_water_heating`              | Holding (`uint16`) | `7` | Riscaldamento acqua forzato                              |
-| `sensor.forced_electric_water_tank_heater` | Holding (`uint16`) | `8` | Resistenza elettrica accumulo forzata                    |
-| `sensor.forced_electric_heater`            | Holding (`uint16`) | `9` | Resistenza elettrica integrativa forzata                 |
-
+ 
+La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se può anche essere comandata (**R-W**, lettura e scrittura). Per leggere o comandare una funzione, usare direttamente l'entità indicata: ad esempio, per lo stato della valvola SV1 si usa `binary_sensor.load_sv1`, per impostare la temperatura dell'acqua in riscaldamento si usa `number.setting_heating_water_temperature`.
+ 
+### Comandi e impostazioni
+ 
+| Entità | Accesso | Descrizione / Valori |
+| :--- | :---: | :--- |
+| `select.setting_operating_mode` | R-W | Modalità: Auto / Raffrescamento / Riscaldamento |
+| `number.setting_heating_water_temperature` | R-W | Setpoint acqua riscaldamento (20-60 °C) |
+| `number.setting_cooling_water_temperature` | R-W | Setpoint acqua raffrescamento (5-25 °C) |
+| `number.setting_domestic_hot_water_temperature` | R-W | Setpoint accumulo ACS T5s (40-60 °C) |
+| `select.heating_curve_selection` | R-W | Curva climatica riscaldamento: Non attiva / 1-8 |
+| `select.cooling_curve_selection` | R-W | Curva climatica raffrescamento: Non attiva / 1-8 |
+| `select.setting_silent_mode` | R-W | Modalità silenziosa: Non attivo / Livello 1 / Livello 2 |
+| `switch.silent_mode` | R-W | Modalità silenziosa on/off rapido (solo BIT6) *(vedi nota doppioni)* |
+| `switch.climate_curve` | R-W | Curva climatica attiva/non attiva (solo BIT12) *(vedi nota doppioni)* |
+| `switch.disinfect` | R-W | Disinfezione termica (antilegionella) |
+| `switch.eco_mode` | R-W | Modalità Eco |
+| `switch.dhw_water_recycling` | R-W | Ricircolo pompa acqua calda sanitaria |
+| `sensor.setting_air_temperature` | R | Setpoint temperatura aria Ts (17-30 °C) |
+| `sensor.forced_water_heating` | R | Riscaldamento acqua forzato (0: Invalido, 2: ON, 3: OFF) |
+| `sensor.forced_electric_water_tank_heater` | R | Resistenza accumulo (TBH) forzata (0: Invalido, 2: ON, 3: OFF) |
+| `sensor.forced_electric_heater` | R | Resistenza integrativa (IBH) forzata (0: Invalido, 2: ON, 3: OFF) |
+ 
+> **Nota sui doppioni (silent mode e curva climatica).** Lo `switch.silent_mode` e il `select.setting_silent_mode` agiscono sullo stesso registro 5: lo switch comanda solo l'accensione (BIT6), il select comanda accensione + livello (BIT6+BIT7). Analogamente `switch.climate_curve` e i due select delle curve agiscono sul BIT12. Tenere sia switch che select è possibile (comodo per un on/off rapido senza scegliere il livello) e **non danneggia i registri**, ma le due entità possono mostrare stati leggermente diversi e, se azionate a pochi secondi di distanza, dare luogo a scritture basate su un valore non ancora aggiornato. Se si preferisce la massima coerenza, tenere solo i select.
+ 
+### Temperature e pressioni
+ 
+| Entità | Accesso | Descrizione / Valori |
+| :--- | :---: | :--- |
+| `sensor.outdoor_ambient_temperature` | R | `°C` T4 - Temperatura aria esterna |
+| `sensor.room_temperature` | R | `°C` Ta - Temperatura ambiente letta |
+| `sensor.water_inlet_temperature` | R | `°C` TW_in - Acqua di ritorno (ingresso pompa) |
+| `sensor.water_outlet_temperature` | R | `°C` TW_out - Acqua in uscita |
+| `sensor.total_water_outlet_temperature` | R | `°C` T1 - Temperatura totale uscita acqua |
+| `sensor.total_water_outlet_temperature_behind_the_auxiliary_heater` | R | `°C` T1B - Acqua dopo riscaldatore ausiliario |
+| `sensor.domestic_hot_water_tank_temperature` | R | `°C` T5 - Temperatura accumulo ACS |
+| `sensor.condenser_temperature` | R | `°C` T3 - Temperatura condensatore |
+| `sensor.discharge_temperature` | R | `°C` Tp - Mandata compressore |
+| `sensor.return_air_temperature` | R | `°C` Th - Aspirazione compressore |
+| `sensor.refrigerant_liquid_side_temperature` | R | `°C` T2 - Refrigerante lato liquido |
+| `sensor.refrigerant_gas_side_temperature` | R | `°C` T2B - Refrigerante lato gas |
+| `sensor.inverter_module_temperature` | R | `°C` TF - Temperatura modulo inverter |
+| `sensor.hydraulic_module_curve_t1s_calculated_value_1` | R | `°C` Valore T1S calcolato (zona 1) |
+| `sensor.hydraulic_module_curve_t1s_calculated_value_2` | R | `°C` Valore T1S calcolato (zona 2) |
+| `sensor.outdoor_unit_high_pressure` | R | `kPa` Alta pressione unità esterna |
+| `sensor.outdoor_unit_low_pressure` | R | `kPa` Bassa pressione unità esterna |
+ 
+### Funzionamento ed energia
+ 
+| Entità | Accesso | Descrizione / Valori |
+| :--- | :---: | :--- |
+| `sensor.operating_mode` | R | Stato operativo (0: Off, 2: Raffrescamento, 3: Riscaldamento) |
+| `sensor.compressor_operating_frequency` | R | `Hz` Frequenza compressore |
+| `sensor.unit_target_frequency` | R | `Hz` Frequenza target compressore |
+| `sensor.fan_speed` | R | `rpm` Velocità ventilatore |
+| `sensor.electronic_expansion_valve_openness` | R | Apertura valvola di espansione (multipli di 8) |
+| `sensor.water_flow` | R | `m³/h` Portata acqua |
+| `sensor.ability_of_hydraulic_module` | R | `kW` Potenza resa modulo idronico |
+| `sensor.outdoor_unit_operating_current` | R | `A` Corrente assorbita unità esterna |
+| `sensor.outdoor_unit_voltage` | R | `V` Tensione unità esterna |
+| `sensor.dc_bus_current` | R | `A` Corrente bus DC |
+| `sensor.dc_bus_voltage` | R | `V` Tensione bus DC |
+| `sensor.limit_outdoor_unit_current` | R | `A` Limite corrente unità esterna |
+| `sensor.compressor_operating_time` | R | `h` Ore funzionamento compressore |
+| `sensor.current_fault` | R | Codice errore attuale |
+| `sensor.hydraulic_module_version_number` | R | Versione modulo idronico |
+| `sensor.wired_controller_version_number` | R | Versione comando a filo |
+ 
+### Stato uscite / carichi (Load output)
+ 
+| Entità | Accesso | Descrizione |
+| :--- | :---: | :--- |
+| `binary_sensor.load_run` | R | Unità in funzione (RUN) |
+| `binary_sensor.load_defrost` | R | Sbrinamento in corso |
+| `binary_sensor.load_alarm` | R | Allarme attivo |
+| `binary_sensor.load_ibh1_electric_heater` | R | Resistenza elettrica IBH1 |
+| `binary_sensor.load_tbh_electric_heater` | R | Resistenza elettrica TBH (accumulo) |
+| `binary_sensor.load_external_heater` | R | Resistenza esterna |
+| `binary_sensor.load_water_pump_pump_i` | R | Pompa acqua PUMPI |
+| `binary_sensor.load_external_water_pump_p_o` | R | Pompa acqua esterna P_o |
+| `binary_sensor.load_water_return_pump_p_d` | R | Pompa ricircolo P_d |
+| `binary_sensor.load_mixed_water_pump_p_c` | R | Pompa acqua miscelata P_c |
+| `binary_sensor.load_solar_water_pump` | R | Pompa acqua solare |
+| `binary_sensor.load_sv1` | R | Valvola SV1 |
+| `binary_sensor.load_sv2` | R | Valvola SV2 |
+| `binary_sensor.load_heat4` | R | HEAT4 |
+ 
+### Stato macchina (Status bit 1)
+ 
+| Entità | Accesso | Descrizione |
+| :--- | :---: | :--- |
+| `binary_sensor.status_defrost` | R | Sbrinamento |
+| `binary_sensor.status_antifreeze` | R | Antigelo |
+| `binary_sensor.status_oil_return` | R | Ritorno olio |
+| `binary_sensor.status_remote_on_off` | R | Remote On/Off |
+| `binary_sensor.status_outdoor_unit_test` | R | Segnale test unità esterna |
+| `binary_sensor.status_thermostat_heating` | R | Termostato (riscaldamento) |
+| `binary_sensor.status_thermostat_cooling` | R | Termostato (raffrescamento) |
+| `binary_sensor.status_solar_input` | R | Input solare |
+| `binary_sensor.status_sg_signal` | R | Segnale SG (on = tariffa normale, off = prezzo alto) |
+| `binary_sensor.status_evu_signal` | R | Segnale EVU (on = elettricità gratis, off = valuta segnale SG) |
+ 
 ---
-
-### 2. Parametri di Funzionamento
-
-| Nome Entità | Tipo | Registro | Unique ID | Unità / Note |
-| :--- | :--- | :--- | :--- | :--- |
-| `sensor.compressor_operating_frequency` | Holding (`uint16`) | `100` | `auriga_operating_frequency` | `Hz` (Frequenza compressore) |
-| `sensor.operating_mode` | Holding (`uint16`) | `101` | `auriga_operating_mode` | Stato operativo (0: Off, 2: Cooling, 3: Heating) |
-| `sensor.fan_speed` | Holding (`uint16`) | `102` | `auriga_fan_speed` | `rpm` (Velocità ventilatore) |
-| `sensor.electronic_expansion_valve_openness` | Holding (`uint16`) | `103` | `auriga_pmv_openness` | Apertura valvola di espansione (multipli di 8) |
-| `sensor.water_inlet_temperature` | Holding (`int16`) | `104` | `auriga_twin_temperature` | `°C` (TW_in - Temperatura ingresso acqua) |
-| `sensor.water_outlet_temperature` | Holding (`int16`) | `105` | `auriga_twout_temperature` | `°C` (TW_out - Temperatura uscita acqua) |
-| `sensor.condenser_temperature` | Holding (`int16`) | `106` | `auriga_t3_temperature` | `°C` (T3 - Temperatura condensatore) |
-| `sensor.outdoor_ambient_temperature` | Holding (`int16`) | `107` | `auriga_t4_temperature` | `°C` (T4 - Temperatura ambiente esterna) |
-| `sensor.discharge_temperature` | Holding (`int16`) | `108` | `auriga_tp_temperature` | `°C` (Tp - Temperatura mandata compressore) |
-| `sensor.return_air_temperature` | Holding (`int16`) | `109` | `auriga_th_temperature` | `°C` (Th - Temperatura aspirazione compressore) |
-| `sensor.total_water_outlet_temperature` | Holding (`int16`) | `110` | `auriga_t1_temperature` | `°C` (T1 - Temperatura totale uscita acqua) |
-| `sensor.total_water_outlet_temperature_behind_the_auxiliary_heater` | Holding (`int16`) | `111` | `auriga_t1b_temperature` | `°C` (T1B - Temperatura acqua dopo riscaldatore ausiliario) |
-| `sensor.refrigerant_liquid_side_temperature` | Holding (`int16`) | `112` | `auriga_t2_temperature` | `°C` (T2 - Temperatura refrigerante lato liquido) |
-| `sensor.refrigerant_gas_side_temperature` | Holding (`int16`) | `113` | `auriga_t2b_temperature` | `°C` (T2B - Temperatura refrigerante lato gas) |
-| `sensor.room_temperature` | Holding (`int16`) | `114` | `auriga_ta_temperature` | `°C` (Ta - Temperatura ambiente letta) |
-| `sensor.domestic_hot_water_tank_temperature` | Holding (`int16`) | `115` | `auriga_t5_temperature` | `°C` (T5 - Temperatura accumulo ACS) |
-| `sensor.outdoor_unit_high_pressure` | Holding (`uint16`) | `116` | `auriga_pressure1` | `kPa` (Alta pressione unità esterna) |
-| `sensor.outdoor_unit_low_pressure` | Holding (`uint16`) | `117` | `auriga_pressure2` | `kPa` (Bassa pressione unità esterna) |
-| `sensor.outdoor_unit_operating_current` | Holding (`uint16`) | `118` | `auriga_operating_current` | `A` (Corrente assorbita) |
-| `sensor.outdoor_unit_voltage` | Holding (`uint16`) | `119` | `auriga_voltage` | `V` (Tensione unità esterna) |
-| `sensor.compressor_operating_time` | Holding (`uint16`) | `122` | `auriga_compressor_operating_time` | `h` (Ore funzionamento compressore) |
-| `sensor.current_fault` | Holding (`uint16`) | `124` | `auriga_current_fault` | Codice errore attuale |
-| `sensor.status_bit_1` | Holding (`uint16`) | `128` | `auriga_status_bit1` | Bitmask stato (Defrost, Antigelo, Termostato, SG Ready, etc.) |
-| `sensor.load_output` | Holding (`uint16`) | `129` | `auriga_load_output` | Bitmask uscite di carico (IBH1, TBH, Pompe, Valvole, Allarme) |
-| `sensor.hydraulic_module_version_number` | Holding (`uint16`) | `130` | `auriga_hydraulic_module_version_number` | Versione modulo idronico |
-| `sensor.wired_controller_version_number` | Holding (`uint16`) | `131` | `auriga_wired_controller_version_number` | Versione comando a filo |
-| `sensor.unit_target_frequency` | Holding (`uint16`) | `132` | `auriga_unit_target_frequency` | `Hz` (Frequenza target compressore) |
-| `sensor.dc_bus_current` | Holding (`uint16`) | `133` | `auriga_dc_bus_current` | `A` (Corrente bus DC) |
-| `sensor.dc_bus_voltage` | Holding (`uint16`) | `134` | `auriga_dc_bus_voltage` | `V` (Tensione bus DC - scala 0.1) |
-| `sensor.inverter_module_temperature` | Holding (`int16`) | `135` | `auriga_tf_temperature` | `°C` (TF - Temperatura modulo inverter) |
-| `sensor.hydraulic_module_curve_t1s_calculated_value_1` | Holding (`int16`) | `136` | `auriga_t1s_calculated_temperature_calc1` | `°C` (Valore T1S calcolato modulo idronico 1) |
-| `sensor.hydraulic_module_curve_t1s_calculated_value_2` | Holding (`int16`) | `137` | `auriga_t1s_calculated_temperature_calc2` | `°C` (Valore T1S calcolato modulo idronico 2) |
-| `sensor.water_flow` | Holding (`uint16`) | `138` | `auriga_water_flow` | `m³/h` (Portata acqua) |
-| `sensor.limit_outdoor_unit_current` | Holding (`uint16`) | `139` | `auriga_limit_outdoor_unit_current` | `A` (Limite corrente unità esterna) |
-| `sensor.ability_of_hydraulic_module` | Holding (`uint16`) | `140` | `auriga_ability_hydraulic_mode` | `kW` (Potenza resa modulo idronico - scala 0.01) |
-
----
-
-### 3. Sensori template elaborati (Decodifica Byte/Bit)
-
-| Nome Entità | Tipo | Registro Sorgente | Descrizione / Calcolo |
-| :--- | :--- | :--- | :--- |
-| `sensor.setting_heating_water_temperature` | Sensor | `Register 2` | Setpoint acqua riscaldamento (°C) - Low Byte (`% 256`) |
-| `sensor.setting_cooling_water_temperature` | Sensor | `Register 2` | Setpoint acqua raffrescamento (°C) - High Byte (`// 256`) |
-| `sensor.heating_curve_selection` | Sensor | `Register 6` | Curva climatica riscaldamento selezionata (1-8) - Low Byte |
-| `sensor.cooling_curve_selection` | Sensor | `Register 6` | Curva climatica raffrescamento selezionata (1-8) - High Byte |
-| `sensor.silent_mode_level` | Sensor | `Register 5` | Livello Modalità Silenziosa (1 o 2) - Decodificato da BIT 7 |
-| `binary_sensor.disinfect` | Binary Sensor | `Register 5` | Stato Funzione Disinfezione (ON/OFF) - BIT 4 |
-| `binary_sensor.silent_mode` | Binary Sensor | `Register 5` | Stato Modalità Silenziosa (ON/OFF) - BIT 6 |
-| `binary_sensor.eco_mode` | Binary Sensor | `Register 5` | Stato Modalità Eco (ON/OFF) - BIT 10 |
-| `binary_sensor.dhw_water_recycling` | Binary Sensor | `Register 5` | Stato Ricircolo Acqua Calda Sanitaria (ON/OFF) - BIT 11 |
-| `binary_sensor.climate_curve` | Binary Sensor | `Register 5` | Stato Curva Climatica Attiva (ON/OFF) - BIT 12 |
+ 
+### Entità interne (uso di servizio)
+ 
+Queste entità contengono i valori "grezzi" dei registri e servono ad alimentare le entità decodificate qui sopra. Normalmente non si usano direttamente.
+ 
+| Entità | Registro | Descrizione |
+| :--- | :--- | :--- |
+| `sensor.system_power_state` | 0 | Stato accensione grezzo (vedi nota sul registro 0) |
+| `sensor.setting_mode` | 1 | Modalità impostata (grezza) |
+| `sensor.setting_water_temperature_t1s_raw` | 2 | Setpoint T1s grezzo (byte basso risc., byte alto raffr.) |
+| `sensor.function_setting_raw` | 5 | Bitmask funzioni speciali |
+| `sensor.curve_selection_raw` | 6 | Curva grezza (byte basso risc., byte alto raffr.) |
+| `sensor.status_bit_1` | 128 | Bitmask stato macchina |
+| `sensor.load_output` | 129 | Bitmask uscite di carico |
+ 
+> **Nota sul registro 0.** `sensor.system_power_state` è un registro di comando: in lettura **non riflette** necessariamente lo stato reale se le funzioni vengono accese dallo schermo della pompa o dal comando cablato. Per sapere cosa è realmente attivo usare `sensor.operating_mode` (registro 101) e i `binary_sensor.load_*` (registro 129). Nota inoltre che il compressore fermo non significa "funzione disattivata": ad esempio con ACS attiva ma acqua già scaldata dal solare termico, il compressore resta spento pur essendo la produzione ACS abilitata.
 
 ---
 
