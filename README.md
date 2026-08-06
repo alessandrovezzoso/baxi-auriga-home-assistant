@@ -18,39 +18,39 @@
 | **Pe**              | Pressione Gas                    | *(Dato tecnico)*: Indica a che pressione sta lavorando l'impianto. Utile per capire se c'è una perdita di gas                                                    |
 
 ## Mappa dei sensori e registri modbus
-Di seguito viene riportato l'elenco di tutti i sensori acquisiti via modbus
+Di seguito viene riportato l'elenco di tutti i sensori acquisiti via modbus.
  
-La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se può anche essere comandata (**R-W**, lettura e scrittura). Per leggere o comandare una funzione, usare direttamente l'entità indicata: ad esempio, per lo stato della valvola SV1 si usa `binary_sensor.load_sv1`, per impostare la temperatura dell'acqua in riscaldamento si usa `number.setting_heating_water_temperature`.
+La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se può anche essere comandata (**R-W**). Per leggere o comandare una funzione, usare direttamente l'entità indicata: ad esempio, per lo stato della valvola SV1 si usa `binary_sensor.load_sv1`, per impostare la temperatura dell'acqua in riscaldamento si usa `number.setting_heating_water_temperature`.
  
 ### Comandi e impostazioni
  
 | Entità | Accesso | Descrizione / Valori |
 | :--- | :---: | :--- |
 | `select.setting_operating_mode` | R-W | Modalità: Auto / Raffrescamento / Riscaldamento |
-| `number.setting_heating_water_temperature` | R-W | Setpoint acqua riscaldamento (20-60 °C) |
+| `number.setting_heating_water_temperature` | R-W | Setpoint acqua riscaldamento (35-60 °C) |
 | `number.setting_cooling_water_temperature` | R-W | Setpoint acqua raffrescamento (5-25 °C) |
 | `number.setting_domestic_hot_water_temperature` | R-W | Setpoint accumulo ACS T5s (40-60 °C) |
 | `select.heating_curve_selection` | R-W | Curva climatica riscaldamento: Non attiva / 1-8 |
 | `select.cooling_curve_selection` | R-W | Curva climatica raffrescamento: Non attiva / 1-8 |
-| `select.setting_silent_mode` | R-W | Modalità silenziosa: Non attivo / Livello 1 / Livello 2 |
+| `select.setting_silent_mode` | R-W | Modalità silenziosa: Non attiva / Livello 1 / Livello 2 |
 | `switch.silent_mode` | R-W | Modalità silenziosa on/off rapido (solo BIT6) *(vedi nota doppioni)* |
 | `switch.climate_curve` | R-W | Curva climatica attiva/non attiva (solo BIT12) *(vedi nota doppioni)* |
 | `switch.disinfect` | R-W | Disinfezione termica (antilegionella) |
 | `switch.eco_mode` | R-W | Modalità Eco |
 | `switch.dhw_water_recycling` | R-W | Ricircolo pompa acqua calda sanitaria |
 | `sensor.setting_air_temperature` | R | Setpoint temperatura aria Ts (17-30 °C) |
-| `sensor.forced_water_heating` | R | Riscaldamento acqua forzato (0: Invalido, 2: ON, 3: OFF) |
-| `sensor.forced_electric_water_tank_heater` | R | Resistenza accumulo (TBH) forzata (0: Invalido, 2: ON, 3: OFF) |
-| `sensor.forced_electric_heater` | R | Resistenza integrativa (IBH) forzata (0: Invalido, 2: ON, 3: OFF) |
+| `sensor.forced_water_heating` | R | Riscaldamento acqua forzato / 0: Invalido, 2: ON, 3: OFF |
+| `sensor.forced_electric_water_tank_heater` | R | Resistenza accumulo (TBH) forzata / 0: Invalido, 2: ON, 3: OFF |
+| `sensor.forced_electric_heater` | R | Resistenza integrativa (IBH) forzata / 0: Invalido, 2: ON, 3: OFF |
  
-> **Nota sui doppioni (silent mode e curva climatica).** Lo `switch.silent_mode` e il `select.setting_silent_mode` agiscono sullo stesso registro 5: lo switch comanda solo l'accensione (BIT6), il select comanda accensione + livello (BIT6+BIT7). Analogamente `switch.climate_curve` e i due select delle curve agiscono sul BIT12. Tenere sia switch che select è possibile (comodo per un on/off rapido senza scegliere il livello) e **non danneggia i registri**, ma le due entità possono mostrare stati leggermente diversi e, se azionate a pochi secondi di distanza, dare luogo a scritture basate su un valore non ancora aggiornato. Se si preferisce la massima coerenza, tenere solo i select.
+> **Nota sui doppioni:** Lo `switch.silent_mode` e il `select.setting_silent_mode` agiscono sullo stesso registro 5: lo switch comanda solo l'accensione (BIT6), il select comanda accensione + livello (BIT6+BIT7). Analogamente `switch.climate_curve` e i due select delle curve agiscono sul BIT12. Tenere sia switch che select è possibile (comodo per un on/off rapido senza scegliere il livello) e **non danneggia i registri**, ma le due entità possono mostrare stati leggermente diversi e, se azionate a pochi secondi di distanza, dare luogo a scritture basate su un valore non ancora aggiornato. Se si preferisce la massima coerenza, tenere solo i select.
  
 ### Temperature e pressioni
  
 | Entità | Accesso | Descrizione / Valori |
 | :--- | :---: | :--- |
 | `sensor.outdoor_ambient_temperature` | R | `°C` T4 - Temperatura aria esterna |
-| `sensor.room_temperature` | R | `°C` Ta - Temperatura ambiente letta |
+| `sensor.room_temperature` | R | `°C` Ta - Temperatura ambiente |
 | `sensor.water_inlet_temperature` | R | `°C` TW_in - Acqua di ritorno (ingresso pompa) |
 | `sensor.water_outlet_temperature` | R | `°C` TW_out - Acqua in uscita |
 | `sensor.total_water_outlet_temperature` | R | `°C` T1 - Temperatura totale uscita acqua |
@@ -71,7 +71,7 @@ La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se
  
 | Entità | Accesso | Descrizione / Valori |
 | :--- | :---: | :--- |
-| `sensor.operating_mode` | R | Stato operativo (0: Off, 2: Raffrescamento, 3: Riscaldamento) |
+| `sensor.operating_mode` | R | Stato operativo / 0: Off, 2: Raffrescamento, 3: Riscaldamento |
 | `sensor.compressor_operating_frequency` | R | `Hz` Frequenza compressore |
 | `sensor.unit_target_frequency` | R | `Hz` Frequenza target compressore |
 | `sensor.fan_speed` | R | `rpm` Velocità ventilatore |
@@ -92,13 +92,13 @@ La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se
  
 | Entità | Accesso | Descrizione |
 | :--- | :---: | :--- |
-| `binary_sensor.load_run` | R | Unità in funzione (RUN) |
+| `binary_sensor.load_run` | R | Unità in funzione |
 | `binary_sensor.load_defrost` | R | Sbrinamento in corso |
 | `binary_sensor.load_alarm` | R | Allarme attivo |
 | `binary_sensor.load_ibh1_electric_heater` | R | Resistenza elettrica IBH1 |
 | `binary_sensor.load_tbh_electric_heater` | R | Resistenza elettrica TBH (accumulo) |
 | `binary_sensor.load_external_heater` | R | Resistenza esterna |
-| `binary_sensor.load_water_pump_pump_i` | R | Pompa acqua PUMPI |
+| `binary_sensor.load_water_pump_pump_i` | R | Pompa acqua PUMP_I |
 | `binary_sensor.load_external_water_pump_p_o` | R | Pompa acqua esterna P_o |
 | `binary_sensor.load_water_return_pump_p_d` | R | Pompa ricircolo P_d |
 | `binary_sensor.load_mixed_water_pump_p_c` | R | Pompa acqua miscelata P_c |
@@ -119,26 +119,8 @@ La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se
 | `binary_sensor.status_thermostat_heating` | R | Termostato (riscaldamento) |
 | `binary_sensor.status_thermostat_cooling` | R | Termostato (raffrescamento) |
 | `binary_sensor.status_solar_input` | R | Input solare |
-| `binary_sensor.status_sg_signal` | R | Segnale SG (on = tariffa normale, off = prezzo alto) |
-| `binary_sensor.status_evu_signal` | R | Segnale EVU (on = elettricità gratis, off = valuta segnale SG) |
- 
----
- 
-### Entità interne (uso di servizio)
- 
-Queste entità contengono i valori "grezzi" dei registri e servono ad alimentare le entità decodificate qui sopra. Normalmente non si usano direttamente.
- 
-| Entità | Registro | Descrizione |
-| :--- | :--- | :--- |
-| `sensor.system_power_state` | 0 | Stato accensione grezzo (vedi nota sul registro 0) |
-| `sensor.setting_mode` | 1 | Modalità impostata (grezza) |
-| `sensor.setting_water_temperature_t1s_raw` | 2 | Setpoint T1s grezzo (byte basso risc., byte alto raffr.) |
-| `sensor.function_setting_raw` | 5 | Bitmask funzioni speciali |
-| `sensor.curve_selection_raw` | 6 | Curva grezza (byte basso risc., byte alto raffr.) |
-| `sensor.status_bit_1` | 128 | Bitmask stato macchina |
-| `sensor.load_output` | 129 | Bitmask uscite di carico |
- 
-> **Nota sul registro 0.** `sensor.system_power_state` è un registro di comando: in lettura **non riflette** necessariamente lo stato reale se le funzioni vengono accese dallo schermo della pompa o dal comando cablato. Per sapere cosa è realmente attivo usare `sensor.operating_mode` (registro 101) e i `binary_sensor.load_*` (registro 129). Nota inoltre che il compressore fermo non significa "funzione disattivata": ad esempio con ACS attiva ma acqua già scaldata dal solare termico, il compressore resta spento pur essendo la produzione ACS abilitata.
+| `binary_sensor.status_sg_signal` | R | Segnale SG / on = tariffa normale, off = prezzo alto |
+| `binary_sensor.status_evu_signal` | R | Segnale EVU / on = elettricità gratis, off = valuta segnale SG |
 
 ---
 
