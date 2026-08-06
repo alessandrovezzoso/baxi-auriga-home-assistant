@@ -39,9 +39,9 @@ La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se
 | `switch.eco_mode` | R-W | Modalità Eco |
 | `switch.dhw_water_recycling` | R-W | Ricircolo pompa acqua calda sanitaria |
 | `sensor.setting_air_temperature` | R | Setpoint temperatura aria Ts (17-30 °C) |
-| `sensor.forced_water_heating` | R | Riscaldamento acqua forzato / 0: Invalido, 2: ON, 3: OFF |
-| `sensor.forced_electric_water_tank_heater` | R | Resistenza accumulo (TBH) forzata / 0: Invalido, 2: ON, 3: OFF |
-| `sensor.forced_electric_heater` | R | Resistenza integrativa (IBH) forzata / 0: Invalido, 2: ON, 3: OFF |
+| `select.forced_water_heating` | R-W | Riscaldamento acqua forzato / 0: Invalido, 2: ON, 3: OFF |
+| `select.forced_electric_water_tank_heater` | R-W | Resistenza accumulo (TBH) forzata / 0: Invalido, 2: ON, 3: OFF |
+| `select.forced_electric_heater` | R-W | Resistenza integrativa (IBH) forzata / 0: Invalido, 2: ON, 3: OFF |
  
 > **Nota sui doppioni:** Lo `switch.silent_mode` e il `select.setting_silent_mode` agiscono sullo stesso registro 5: lo switch comanda solo l'accensione (BIT6), il select comanda accensione + livello (BIT6+BIT7). Analogamente `switch.climate_curve` e i due select delle curve agiscono sul BIT12. Tenere sia switch che select è possibile (comodo per un on/off rapido senza scegliere il livello) e **non danneggia i registri**, ma le due entità possono mostrare stati leggermente diversi e, se azionate a pochi secondi di distanza, dare luogo a scritture basate su un valore non ancora aggiornato. Se si preferisce la massima coerenza, tenere solo i select.
  
@@ -98,13 +98,13 @@ La colonna **Accesso** indica se un'entità è di sola lettura (**R**) oppure se
 | `binary_sensor.load_ibh1_electric_heater` | R | Resistenza elettrica IBH1 |
 | `binary_sensor.load_tbh_electric_heater` | R | Resistenza elettrica TBH (accumulo) |
 | `binary_sensor.load_external_heater` | R | Resistenza esterna |
-| `binary_sensor.load_water_pump_pump_i` | R | Pompa acqua PUMP_I |
-| `binary_sensor.load_external_water_pump_p_o` | R | Pompa acqua esterna P_o |
-| `binary_sensor.load_water_return_pump_p_d` | R | Pompa ricircolo P_d |
-| `binary_sensor.load_mixed_water_pump_p_c` | R | Pompa acqua miscelata P_c |
-| `binary_sensor.load_solar_water_pump` | R | Pompa acqua solare |
-| `binary_sensor.load_sv1` | R | Valvola SV1 |
-| `binary_sensor.load_sv2` | R | Valvola SV2 |
+| `binary_sensor.load_water_pump_pump_i` | R | Pompa circolazione interna (PUMP_I) |
+| `binary_sensor.load_external_water_pump_p_o` | R | Pompa circolazione esterna (P_o) |
+| `binary_sensor.load_water_return_pump_p_d` | R | Pompa circolazione ACS (P_d) |
+| `binary_sensor.load_mixed_water_pump_p_c` | R | Pompa circolazione miscelata (P_c) |
+| `binary_sensor.load_solar_water_pump` | R | Pompa circolazione solare (P_s) |
+| `binary_sensor.load_sv1` | R | Valvola a tre vie SV1 |
+| `binary_sensor.load_sv2` | R | Valvola a tre vie SV2 |
 | `binary_sensor.load_heat4` | R | HEAT4 |
  
 ### Stato macchina (Status bit 1)

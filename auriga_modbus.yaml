@@ -317,7 +317,7 @@ modbus:
         device_class: temperature
         state_class: measurement
 
-      # Valore alta pressione unita esterna
+      # Outdoor unit high pressure value
       - name: "Outdoor unit high pressure"
         address: 116
         scan_interval: 15
@@ -329,7 +329,7 @@ modbus:
         device_class: pressure
         state_class: measurement
 
-      # Valore bassa pressione unita esterna
+      # Outdoor unit low pressure value
       - name: "Outdoor unit low pressure"
         address: 117
         scan_interval: 15
@@ -387,16 +387,16 @@ modbus:
         input_type: holding
 
       # Status bit 1
-      # BIT1: Sbrinamento, 
-      # BIT2: Antigelo, 
-      # BIT3: Ritorno olio, 
-      # BIT4: Remote On/Off, 
-      # BIT5: Segnale test unità esterna, 
-      # BIT6: Termostato (riscaldamento), 
-      # BIT7: Termostato (raffreddamento), 
-      # BIT8: Input solare, 
-      # BIT10: SG 1=normale, 0=prezzo alto, 
-      # BIT11: EUV 1=elettricità gratis, 0=valuta segnale SG
+      # BIT1: Defrosting
+      # BIT2: Anti-freezing
+      # BIT3: Oil return
+      # BIT4: Remote On/Off
+      # BIT5: Outdoor unit test mode, 
+      # BIT6: Room temperature controller (heating)
+      # BIT7: Room temperature controller (cooling)
+      # BIT8: Solar energy signal input
+      # BIT10: SG 1=normal electricity, 0=high price electricity
+      # BIT11: EUV 1=free electricity, 0=judge by SG signal
       - name: "Status bit 1"
         address: 128
         scan_interval: 15
@@ -408,18 +408,18 @@ modbus:
       # Load output
       # BIT0: Electric heater IBH1
       # BIT2: Domestic hot water electric heater TBH
-      # BIT3: Water pump PUMPI
-      # BIT4: SV1
+      # BIT3: Internal water pump PUMP_I
+      # BIT4: Three way valve SV1
       # BIT6: External water pump P_o
       # BIT7: Water return water P_d
       # BIT8: Mixed water pump P_c
-      # BIT9: SV2
+      # BIT9: Three way valve SV2
       # BIT10: HEAT4
-      # BIT11: Solar water pump
-      # BIT12: ALARM
-      # BIT13: RUN
+      # BIT11: Solar water pump P_s
+      # BIT12: Alarm
+      # BIT13: Run
       # BIT14: External heater
-      # BIT15: DEFROST
+      # BIT15: Defrost
       - name: "Load output"
         address: 129
         scan_interval: 15
@@ -942,7 +942,7 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4) > 0 }}"
 
-    # PUMP_I water pump (register no.129: BIT3)
+    # PUMP_I internal water pump (register no.129: BIT3)
     - name: "Load water pump PUMP_I"
       unique_id: auriga_load_pumpi
       device_class: running
@@ -984,9 +984,9 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1024) > 0 }}"
 
-    # Solar water pump (register no.129: BIT11)
-    - name: "Load solar water pump"
-      unique_id: auriga_load_solar_pump
+    # P_s solar water pump (register no.129: BIT11)
+    - name: "Load solar water pump P_s"
+      unique_id: auriga_load_solar_pump_ps
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(2048) > 0 }}"
 
