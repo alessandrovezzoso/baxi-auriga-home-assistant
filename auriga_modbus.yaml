@@ -659,6 +659,60 @@ template:
               - sensor.function_setting_raw
               - sensor.curve_selection_raw
 
+    # Forced water heating (register no.7)
+    - name: "Forced water heating"
+      unique_id: auriga_setting_forced_water_heating
+      options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
+      state: "{{ 'Auto' if states('sensor.forced_water_heating') | int(0) == 0 else ('Forced on' if states('sensor.forced_water_heating') | int(0) == 1 else 'Forced off') }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 7
+            value: "{{ 0 if option == 'Auto' else (1 if option == 'Forced on' else 2) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.forced_water_heating
+
+    # Forced electric water tank heater TBH (register no.8)
+    - name: "Forced electric water tank heater"
+      unique_id: auriga_setting_forced_tbh
+      options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
+      state: "{{ 'Auto' if states('sensor.forced_electric_water_tank_heater') | int(0) == 0 else ('Forced on' if states('sensor.forced_electric_water_tank_heater') | int(0) == 1 else 'Forced off') }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 8
+            value: "{{ 0 if option == 'Auto' else (1 if option == 'Forced on' else 2) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.forced_electric_water_tank_heater
+
+    # Forced electric heater IBH1 (register no.9)
+    - name: "Forced electric heater"
+      unique_id: auriga_setting_forced_ibh1
+      options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
+      state: "{{ 'Auto' if states('sensor.forced_electric_heater') | int(0) == 0 else ('Forced on' if states('sensor.forced_electric_heater') | int(0) == 1 else 'Forced off') }}"
+      select_option:
+        - action: modbus.write_register
+          data:
+            hub: auriga
+            slave: 1
+            address: 9
+            value: "{{ 0 if option == 'Auto' else (1 if option == 'Forced on' else 2) }}"
+        - delay:
+            milliseconds: 500
+        - action: homeassistant.update_entity
+          target:
+            entity_id: sensor.forced_electric_heater
+
   ## Number ################################################################################################
   - number:
     # Heating water temperature (register no.2, low byte)
