@@ -936,13 +936,13 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(2048) > 0 }}"
 
-    # ALARM (register no.129: BIT12)
+    # Alarm (register no.129: BIT12)
     - name: "Load alarm"
       unique_id: auriga_load_alarm
       device_class: problem
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4096) > 0 }}"
 
-    # RUN (register no.129: BIT13)
+    # Run (register no.129: BIT13)
     - name: "Load run"
       unique_id: auriga_load_run
       device_class: running
@@ -954,8 +954,65 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(16384) > 0 }}"
 
-    # DEFROST (register no.129: BIT15)
+    # Defrost (register no.129: BIT15)
     - name: "Load defrost"
       unique_id: auriga_load_defrost
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(32768) > 0 }}"
+    
+    # Defrost status (register no.128: BIT1)
+    - name: "Status defrost"
+      unique_id: auriga_status_defrost
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(2) > 0 }}"
+
+    # Antifreeze status (register no.128: BIT2)
+    - name: "Status antifreeze"
+      unique_id: auriga_status_antifreeze
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(4) > 0 }}"
+
+    # Oil return (register no.128: BIT3)
+    - name: "Status oil return"
+      unique_id: auriga_status_oil_return
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(8) > 0 }}"
+
+    # Remote On/Off (register no.128: BIT4)
+    - name: "Status remote on off"
+      unique_id: auriga_status_remote_onoff
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(16) > 0 }}"
+
+    # Outdoor unit test (register no.128: BIT5)
+    - name: "Status outdoor unit test"
+      unique_id: auriga_status_outdoor_test
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(32) > 0 }}"
+
+    # Thermostat heating (register no.128: BIT6)
+    - name: "Status thermostat heating"
+      unique_id: auriga_status_thermostat_heating
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(64) > 0 }}"
+
+    # Thermostat cooling (register no.128: BIT7)
+    - name: "Status thermostat cooling"
+      unique_id: auriga_status_thermostat_cooling
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(128) > 0 }}"
+
+    # Solar input (register no.128: BIT8)
+    - name: "Status solar input"
+      unique_id: auriga_status_solar_input
+      device_class: running
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(256) > 0 }}"
+
+    # SG (register no.128: BIT10)
+    - name: "Status SG signal"
+      unique_id: auriga_status_sg
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(1024) > 0 }}"
+
+    # EUV (register no.128: BIT11)
+    - name: "Status EVU signal"
+      unique_id: auriga_status_evu
+      state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(2048) > 0 }}"
