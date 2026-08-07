@@ -18,11 +18,11 @@ modbus:
       # BIT2: domestic hot water        0 power off; 1 power on
       # BIT3: air conditioner (zone 2)  0 power off; 1 power on
       # BIT4 - BIT15: Reserved
-      - name: "System power state"
+      - name: "System power state RAW"
         address: 0
         scan_interval: 30
         slave: 1
-        unique_id: auriga_system_power_state
+        unique_id: auriga_raw_system_power_state
         data_type: uint16
         input_type: holding
 
@@ -786,118 +786,118 @@ template:
     # Room heating (register no.0: BIT0)
     - name: "System power room heating"
       unique_id: auriga_system_power_room_heating
-      state: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(1) > 0 }}"
+      state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(1) > 0 }}"
       turn_on:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_or(1) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_or(1) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
       turn_off:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(65534) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(65534) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
 
     # Air conditioner zone 1 (register no.0: BIT1)
     - name: "System power air conditioner zone 1"
       unique_id: auriga_system_power_ac_zone1
-      state: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(2) > 0 }}"
+      state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(2) > 0 }}"
       turn_on:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_or(2) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_or(2) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
       turn_off:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(65533) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(65533) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
 
     # Domestic hot water (register no.0: BIT2)
     - name: "System power domestic hot water"
       unique_id: auriga_system_power_dhw
-      state: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(4) > 0 }}"
+      state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(4) > 0 }}"
       turn_on:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_or(4) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_or(4) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
       turn_off:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(65531) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(65531) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
 
     # Air conditioner zone 2 (register no.0: BIT3)
     - name: "System power air conditioner zone 2"
       unique_id: auriga_system_power_ac_zone2
-      state: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(8) > 0 }}"
+      state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(8) > 0 }}"
       turn_on:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_or(8) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_or(8) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
       turn_off:
         - action: modbus.write_register
           data:
             hub: auriga
             slave: 1
             address: 0
-            value: "{{ states('sensor.system_power_state') | int(0) | bitwise_and(65527) }}"
+            value: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(65527) }}"
         - delay:
             milliseconds: 500
         - action: homeassistant.update_entity
           target:
-            entity_id: sensor.system_power_state
+            entity_id: sensor.system_power_state_raw
 
     # Disinfect (register no.5: BIT4)
     - name: "Disinfect"
