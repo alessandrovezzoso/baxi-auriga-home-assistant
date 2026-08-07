@@ -7,7 +7,9 @@ modbus:
     timeout: 5                          # Timeout while waiting for a response in seconds
     message_wait_milliseconds: 100      # Time to wait in milliseconds between requests
 
+    ############################################################################################################
     ### SENSORS ################################################################################################
+    ############################################################################################################
     sensors:
       # SETTING PARAMETERS ################################################################
 
@@ -556,9 +558,56 @@ modbus:
         unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
+      
+
+      # SETTING INSTALLATOR PARAMETERS ####################################################
 
 
+      # Parameter setting 1
+      # BIT0: Priority              0 room cooling/heating first; 1 DHW first
+      # BIT1: Dual room thermostat  0 not supported; 1 supported
+      # BIT2: Room thermostat
+      # BIT3: Supports room thermostat
+      # BIT4: Supports room temperature (sensor Ta)
+      # BIT5: Supports sensor T1
+      # BIT6: T1s heating high/low temperature settings (read-only)
+      # BIT7: Enable heating
+      # BIT8: T1s cooling high/low temperature settings (read-only)
+      # BIT9: Enable cooling
+      # BIT10: DHW pump supports Pipe Disinfect
+      # BIT12: DHW pump             0 not supported; 1 supported
+      # BIT13: Support disinfection
+      # BIT14: Support water tank electric heater TBH (read-only)
+      # BIT15: Enable water heating
+      - name: "Parameter setting 1 RAW"
+        address: 210
+        scan_interval: 30
+        slave: 1
+        unique_id: auriga_raw_parameter_setting_1
+        data_type: uint16
+        input_type: holding
+      
+      # Parameter setting 2
+      # BIT3: Double zone setting is valid
+      # BIT4: Setting the high/low temperature of heating mode T1s
+      # BIT5: Setting the high/low temperature of cooling mode T1s
+      # BIT6: Enable Tw2            0 no; 1 yes
+      # BIT7: Smart grid            0 no; 1 yes
+      # BIT8: Define the port       0 remote ON/OFF; 1 DHW heater
+      - name: "Parameter setting 2 RAW"
+        address: 211
+        scan_interval: 30
+        slave: 1
+        unique_id: auriga_raw_parameter_setting_2
+        data_type: uint16
+        input_type: holding
+
+
+
+
+############################################################################################################
 ### TEMPLATE ###############################################################################################
+############################################################################################################
 template:
   ## Select ################################################################################################
   - select:
