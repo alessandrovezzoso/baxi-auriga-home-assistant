@@ -1289,3 +1289,98 @@ template:
     - name: "Status EVU signal"
       unique_id: auriga_status_evu
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(2048) > 0 }}"
+    
+    # Priority (register no.210: BIT0)
+    - name: "Param priority dhw first"
+      unique_id: auriga_param_priority_dhw_first
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(1) > 0 }}"
+
+    # Dual room thermostat (register no.210: BIT1)
+    - name: "Param dual room thermostat"
+      unique_id: auriga_param_dual_room_thermostat
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(2) > 0 }}"
+
+    # Room thermostat (register no.210: BIT2)
+    - name: "Param room thermostat"
+      unique_id: auriga_param_room_thermostat
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(4) > 0 }}"
+
+    # Supports room thermostat (register no.210: BIT3)
+    - name: "Param supports room thermostat"
+      unique_id: auriga_param_supports_room_thermostat
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(8) > 0 }}"
+
+    # Supports room temperature Ta (register no.210: BIT4)
+    - name: "Param supports room temperature sensor"
+      unique_id: auriga_param_supports_room_temperature_sensor_ta
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(16) > 0 }}"
+
+    # Supports sensor T1 (register no.210: BIT5)
+    - name: "Param supports sensor t1"
+      unique_id: auriga_param_supports_sensor_t1
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(32) > 0 }}"
+
+    # Enable heating (register no.210: BIT7)
+    - name: "Param enable heating"
+      unique_id: auriga_param_enable_heating
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(128) > 0 }}"
+
+    # Enable cooling (register no.210: BIT9)
+    - name: "Param enable cooling"
+      unique_id: auriga_param_enable_cooling
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(512) > 0 }}"
+
+    # DHW pump pipe disinfect (register no.210: BIT10)
+    - name: "Param dhw pump pipe disinfect"
+      unique_id: auriga_param_dhw_pump_pipe_disinfect
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(1024) > 0 }}"
+
+    # DHW pump (register no.210: BIT12)
+    - name: "Param support dhw pump"
+      unique_id: auriga_param_supports_dhw_pump
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(4096) > 0 }}"
+
+    # Support disinfection (register no.210: BIT13)
+    - name: "Param supports disinfection"
+      unique_id: auriga_param_supports_disinfection
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(8192) > 0 }}"
+
+    # Support water tank electric heater TBH (register no.210: BIT14)
+    - name: "Param supports tbh heater"
+      unique_id: auriga_param_supports_tbh_heater
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(16384) > 0 }}"
+
+    # Enable water heating (register no.210: BIT15)
+    - name: "Param enable water heating"
+      unique_id: auriga_param_enable_water_heating
+      state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(32768) > 0 }}"
+
+    # Double zone setting is valid (register no.211: BIT3)
+    - name: "Param double zone valid"
+      unique_id: auriga_param_double_zone_valid
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(8) > 0 }}"
+
+    # Setting the high/low temperature of heating mode T1s (register no.211: BIT4)
+    - name: "Param set t1s heating high low"
+      unique_id: auriga_param_set_t1s_heating_high_low
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(16) > 0 }}"
+
+    # Setting the high/low temperature of cooling mode T1s (register no.211: BIT5)
+    - name: "Param set t1s cooling high low"
+      unique_id: auriga_param_set_t1s_cooling_high_low
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(32) > 0 }}"
+
+    # Enable Tw2 (register no.211: BIT6)
+    - name: "Param enable tw2"
+      unique_id: auriga_param_enable_tw2
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(64) > 0 }}"
+
+    # Smart grid (register no.211: BIT7)
+    - name: "Param smart grid"
+      unique_id: auriga_param_smart_grid
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(128) > 0 }}"
+
+    # Define the port (register no.211: BIT8)
+    - name: "Param port dhw heater"
+      unique_id: auriga_param_port_dhw_heater
+      state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(256) > 0 }}"
