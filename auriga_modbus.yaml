@@ -15,7 +15,7 @@ modbus:
 
 
       # Power on/off
-      # BIT0: room heating              0 power off; 1 power on
+      # BIT0: floor heating             0 power off; 1 power on
       # BIT1: air conditioner (zone 1)  0 power off; 1 power on
       # BIT2: domestic hot water        0 power off; 1 power on
       # BIT3: air conditioner (zone 2)  0 power off; 1 power on
@@ -886,9 +886,9 @@ template:
  
   ## Switch ################################################################################################
   - switch:
-    # Room heating (register no.0: BIT0)
-    - name: "System power room heating"
-      unique_id: auriga_system_power_room_heating
+    # Floor heating (register no.0: BIT0)
+    - name: "System power floor heating"
+      unique_id: auriga_system_power_floor_heating
       state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(1) > 0 }}"
       turn_on:
         - action: modbus.write_register
@@ -1161,9 +1161,9 @@ template:
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4) > 0 }}"
 
-    # PUMP_I internal water pump (register no.129: BIT3)
-    - name: "Load water pump PUMP_I"
-      unique_id: auriga_load_pumpi
+    # P_i internal water pump (register no.129: BIT3)
+    - name: "Load internal water pump P_i"
+      unique_id: auriga_load_pi
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(8) > 0 }}"
 
