@@ -619,6 +619,34 @@ modbus:
 ### TEMPLATE ###############################################################################################
 ############################################################################################################
 template:
+  ## Sensor ################################################################################################
+  - sensor:
+    # Calculated operating status
+    - name: "Operating status"
+      unique_id: auriga_operating_status
+      icon: mdi:state-machine
+      state: >-
+        {% set run = states('binary_sensor.load_run') -%}
+        {%- set pi  = states('binary_sensor.load_internal_water_pump_p_i') -%}
+        {%- set po  = states('binary_sensor.load_external_water_pump_p_o') -%}
+        {%- set sv1 = states('binary_sensor.load_sv1') -%}
+        {%- set defrost = states('binary_sensor.load_defrost') -%}
+        {%- if run in ['unavailable', 'unknown'] -%}
+          Unavailable
+        {%- elif run != 'on' -%}
+          Standby
+        {%- elif defrost == 'on' -%}
+          Defrosting
+        {%- elif pi == 'on' and sv1 == 'on' -%}
+          Active for DHW
+        {%- elif pi == 'on' and po == 'on' -%}
+          Active for heating
+        {%- else -%}
+          Active
+        {%- endif %}
+      availability: >-
+        {{ true }}
+  
   ## Select ################################################################################################
   - select:
     # Operating mode (register no.1)
