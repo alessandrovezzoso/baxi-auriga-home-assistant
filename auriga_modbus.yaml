@@ -659,6 +659,7 @@ template:
         {% elif m == 2 %}Cooling
         {% elif m == 3 %}Heating
         {% endif %}
+      availability: "{{ states('sensor.setting_mode') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -681,6 +682,7 @@ template:
       unique_id: auriga_setting_silent_mode
       options: "{{ ['Not active', 'Level 1', 'Level 2'] }}"
       state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(64) == 0 else ('Level 2' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(128) > 0 else 'Level 1') }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -699,6 +701,7 @@ template:
       unique_id: auriga_setting_heating_curve
       options: "{{ ['Not active', '1', '2', '3', '4', '5', '6', '7', '8'] }}"
       state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(4096) == 0 else (states('sensor.curve_selection_raw') | int(0) % 256) | string }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -725,6 +728,7 @@ template:
       unique_id: auriga_setting_cooling_curve
       options: "{{ ['Not active', '1', '2', '3', '4', '5', '6', '7', '8'] }}"
       state: "{{ 'Not active' if (states('sensor.function_setting_raw') | int(0)) | bitwise_and(4096) == 0 else (states('sensor.curve_selection_raw') | int(0) // 256) | string }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -751,6 +755,7 @@ template:
       unique_id: auriga_setting_forced_water_heating
       options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
       state: "{{ 'Auto' if states('sensor.forced_water_heating') | int(0) == 0 else ('Forced on' if states('sensor.forced_water_heating') | int(0) == 1 else 'Forced off') }}"
+      availability: "{{ states('sensor.forced_water_heating') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -769,6 +774,7 @@ template:
       unique_id: auriga_setting_forced_tbh
       options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
       state: "{{ 'Auto' if states('sensor.forced_electric_water_tank_heater') | int(0) == 0 else ('Forced on' if states('sensor.forced_electric_water_tank_heater') | int(0) == 1 else 'Forced off') }}"
+      availability: "{{ states('sensor.forced_electric_water_tank_heater') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -787,6 +793,7 @@ template:
       unique_id: auriga_setting_forced_ibh1
       options: "{{ ['Auto', 'Forced on', 'Forced off'] }}"
       state: "{{ 'Auto' if states('sensor.forced_electric_heater') | int(0) == 0 else ('Forced on' if states('sensor.forced_electric_heater') | int(0) == 1 else 'Forced off') }}"
+      availability: "{{ states('sensor.forced_electric_heater') not in ['unavailable', 'unknown'] }}"
       select_option:
         - action: modbus.write_register
           data:
@@ -811,6 +818,7 @@ template:
       max: 60
       step: 1
       state: "{{ states('sensor.setting_water_temperature_t1s_raw') | int(0) % 256 }}"
+      availability: "{{ states('sensor.setting_water_temperature_t1s_raw') not in ['unavailable', 'unknown'] }}"
       set_value:
         - action: modbus.write_register
           data:
@@ -833,6 +841,7 @@ template:
       max: 25
       step: 1
       state: "{{ states('sensor.setting_water_temperature_t1s_raw') | int(0) // 256 }}"
+      availability: "{{ states('sensor.setting_water_temperature_t1s_raw') not in ['unavailable', 'unknown'] }}"
       set_value:
         - action: modbus.write_register
           data:
@@ -855,6 +864,7 @@ template:
       max: 30
       step: 0.5
       state: "{{ states('sensor.setting_air_temperature_raw') | int(0) / 2 }}"
+      availability: "{{ states('sensor.setting_air_temperature_raw') not in ['unavailable', 'unknown'] }}"
       set_value:
         - action: modbus.write_register
           data:
@@ -877,6 +887,7 @@ template:
       max: 60
       step: 1
       state: "{{ states('sensor.setting_water_tank_temperature') | int(0) }}"
+      availability: "{{ states('sensor.setting_water_tank_temperature') not in ['unavailable', 'unknown'] }}"
       set_value:
         - action: modbus.write_register
           data:
@@ -899,6 +910,7 @@ template:
       max: 120
       step: 1
       state: "{{ states('sensor.water_return_pump_running_time') | int(0) }}"
+      availability: "{{ states('sensor.water_return_pump_running_time') not in ['unavailable', 'unknown'] }}"
       set_value:
         - action: modbus.write_register
           data:
@@ -918,6 +930,7 @@ template:
     - name: "System power floor heating"
       unique_id: auriga_system_power_floor_heating
       state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(1) > 0 }}"
+      availability: "{{ states('sensor.system_power_state_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -947,6 +960,7 @@ template:
     - name: "System power air conditioner zone 1"
       unique_id: auriga_system_power_ac_zone1
       state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(2) > 0 }}"
+      availability: "{{ states('sensor.system_power_state_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -976,6 +990,7 @@ template:
     - name: "System power domestic hot water"
       unique_id: auriga_system_power_dhw
       state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(4) > 0 }}"
+      availability: "{{ states('sensor.system_power_state_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1005,6 +1020,7 @@ template:
     - name: "System power air conditioner zone 2"
       unique_id: auriga_system_power_ac_zone2
       state: "{{ states('sensor.system_power_state_raw') | int(0) | bitwise_and(8) > 0 }}"
+      availability: "{{ states('sensor.system_power_state_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1034,6 +1050,7 @@ template:
     - name: "Disinfect"
       unique_id: auriga_disinfect
       state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(16) > 0 }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1063,6 +1080,7 @@ template:
     - name: "Silent mode"
       unique_id: auriga_silent_mode
       state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(64) > 0 }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1092,6 +1110,7 @@ template:
     - name: "Eco mode"
       unique_id: auriga_eco_mode
       state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(1024) > 0 }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1121,6 +1140,7 @@ template:
     - name: "DHW water recycling"
       unique_id: auriga_dhw_water_recycling
       state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(2048) > 0 }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1150,6 +1170,7 @@ template:
     - name: "Climate curve"
       unique_id: auriga_climate_curve
       state: "{{ states('sensor.function_setting_raw') | int(0) | bitwise_and(4096) > 0 }}"
+      availability: "{{ states('sensor.function_setting_raw') not in ['unavailable', 'unknown'] }}"
       turn_on:
         - action: modbus.write_register
           data:
@@ -1182,233 +1203,276 @@ template:
       unique_id: auriga_load_ibh1
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # Domestic hot water electric heater TBH (register no.129: BIT2)
     - name: "Load TBH electric heater"
       unique_id: auriga_load_tbh
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # P_i internal water pump (register no.129: BIT3)
     - name: "Load internal water pump P_i"
       unique_id: auriga_load_pi
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(8) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # SV1 (register no.129: BIT4)
     - name: "Load SV1"
       unique_id: auriga_load_sv1
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(16) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # P_o external water pump (register no.129: BIT6)
     - name: "Load external water pump P_o"
       unique_id: auriga_load_po
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(64) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # P_d return water pump (register no.129: BIT7)
     - name: "Load water return pump P_d"
       unique_id: auriga_load_pd
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(128) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # P_c mixed water pump (register no.129: BIT8)
     - name: "Load mixed water pump P_c"
       unique_id: auriga_load_pc
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(256) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # SV2 (register no.129: BIT9)
     - name: "Load SV2"
       unique_id: auriga_load_sv2
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(512) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # HEAT4 (register no.129: BIT10)
     - name: "Load HEAT4"
       unique_id: auriga_load_heat4
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(1024) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # P_s solar water pump (register no.129: BIT11)
     - name: "Load solar water pump P_s"
       unique_id: auriga_load_solar_pump_ps
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(2048) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # Alarm (register no.129: BIT12)
     - name: "Load alarm"
       unique_id: auriga_load_alarm
       device_class: problem
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(4096) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # Run (register no.129: BIT13)
     - name: "Load run"
       unique_id: auriga_load_run
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(8192) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # External heater (register no.129: BIT14)
     - name: "Load external heater"
       unique_id: auriga_load_external_heater
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(16384) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
 
     # Defrost (register no.129: BIT15)
     - name: "Load defrost"
       unique_id: auriga_load_defrost
       device_class: running
       state: "{{ states('sensor.load_output') | int(0) | bitwise_and(32768) > 0 }}"
+      availability: "{{ states('sensor.load_output') not in ['unavailable', 'unknown'] }}"
     
     # Defrost status (register no.128: BIT1)
     - name: "Status defrost"
       unique_id: auriga_status_defrost
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(2) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Antifreeze status (register no.128: BIT2)
     - name: "Status antifreeze"
       unique_id: auriga_status_antifreeze
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(4) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Oil return (register no.128: BIT3)
     - name: "Status oil return"
       unique_id: auriga_status_oil_return
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(8) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Remote On/Off (register no.128: BIT4)
     - name: "Status remote on off"
       unique_id: auriga_status_remote_onoff
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(16) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Outdoor unit test (register no.128: BIT5)
     - name: "Status outdoor unit test"
       unique_id: auriga_status_outdoor_test
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(32) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Thermostat heating (register no.128: BIT6)
     - name: "Status thermostat heating"
       unique_id: auriga_status_thermostat_heating
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(64) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Thermostat cooling (register no.128: BIT7)
     - name: "Status thermostat cooling"
       unique_id: auriga_status_thermostat_cooling
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(128) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # Solar input (register no.128: BIT8)
     - name: "Status solar input"
       unique_id: auriga_status_solar_input
       device_class: running
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(256) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # SG (register no.128: BIT10)
     - name: "Status SG signal"
       unique_id: auriga_status_sg
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(1024) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
 
     # EUV (register no.128: BIT11)
     - name: "Status EVU signal"
       unique_id: auriga_status_evu
       state: "{{ states('sensor.status_bit_1') | int(0) | bitwise_and(2048) > 0 }}"
+      availability: "{{ states('sensor.status_bit_1') not in ['unavailable', 'unknown'] }}"
     
     # Priority (register no.210: BIT0)
     - name: "Param priority dhw first"
       unique_id: auriga_param_priority_dhw_first
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(1) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Dual room thermostat (register no.210: BIT1)
     - name: "Param dual room thermostat"
       unique_id: auriga_param_dual_room_thermostat
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(2) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Room thermostat (register no.210: BIT2)
     - name: "Param room thermostat"
       unique_id: auriga_param_room_thermostat
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(4) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Supports room thermostat (register no.210: BIT3)
     - name: "Param supports room thermostat"
       unique_id: auriga_param_supports_room_thermostat
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(8) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Supports room temperature Ta (register no.210: BIT4)
     - name: "Param supports room temperature sensor"
       unique_id: auriga_param_supports_room_temperature_sensor_ta
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(16) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Supports sensor T1 (register no.210: BIT5)
     - name: "Param supports sensor t1"
       unique_id: auriga_param_supports_sensor_t1
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(32) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Enable heating (register no.210: BIT7)
     - name: "Param enable heating"
       unique_id: auriga_param_enable_heating
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(128) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Enable cooling (register no.210: BIT9)
     - name: "Param enable cooling"
       unique_id: auriga_param_enable_cooling
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(512) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # DHW pump pipe disinfect (register no.210: BIT10)
     - name: "Param dhw pump pipe disinfect"
       unique_id: auriga_param_dhw_pump_pipe_disinfect
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(1024) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # DHW pump (register no.210: BIT12)
     - name: "Param support dhw pump"
       unique_id: auriga_param_supports_dhw_pump
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(4096) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Support disinfection (register no.210: BIT13)
     - name: "Param supports disinfection"
       unique_id: auriga_param_supports_disinfection
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(8192) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Support water tank electric heater TBH (register no.210: BIT14)
     - name: "Param supports tbh heater"
       unique_id: auriga_param_supports_tbh_heater
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(16384) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Enable water heating (register no.210: BIT15)
     - name: "Param enable water heating"
       unique_id: auriga_param_enable_water_heating
       state: "{{ states('sensor.parameter_setting_1_raw') | int(0) | bitwise_and(32768) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_1_raw') not in ['unavailable', 'unknown'] }}"
 
     # Double zone setting is valid (register no.211: BIT3)
     - name: "Param double zone valid"
       unique_id: auriga_param_double_zone_valid
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(8) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
 
     # Setting the high/low temperature of heating mode T1s (register no.211: BIT4)
     - name: "Param set t1s heating high low"
       unique_id: auriga_param_set_t1s_heating_high_low
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(16) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
 
     # Setting the high/low temperature of cooling mode T1s (register no.211: BIT5)
     - name: "Param set t1s cooling high low"
       unique_id: auriga_param_set_t1s_cooling_high_low
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(32) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
 
     # Enable Tw2 (register no.211: BIT6)
     - name: "Param enable tw2"
       unique_id: auriga_param_enable_tw2
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(64) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
 
     # Smart grid (register no.211: BIT7)
     - name: "Param smart grid"
       unique_id: auriga_param_smart_grid
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(128) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
 
     # Define the port (register no.211: BIT8)
     - name: "Param port dhw heater"
       unique_id: auriga_param_port_dhw_heater
       state: "{{ states('sensor.parameter_setting_2_raw') | int(0) | bitwise_and(256) > 0 }}"
+      availability: "{{ states('sensor.parameter_setting_2_raw') not in ['unavailable', 'unknown'] }}"
